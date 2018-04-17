@@ -10,13 +10,36 @@ use yii\grid\CheckboxColumn;
 use yii\grid\SerialColumn;
 
 $this->title = 'Телефонний довідник';
-$zag = 'Всього знайдено: '.$kol;
+$flag_like = 0;
+if($kol==0){
+    $zag = '';
+    
+    if(isset($closest[0])){
+    if($closest[0]<>''){
+        $like_surname = '';
+        $flag_like = 1;
+        
+        foreach ($closest as $v)
+            $like_surname.=$v.', ';
+            $zag = substr($like_surname,0, strlen($like_surname)-2);
+    }
+    }
+}
+else
+    $zag = 'Всього знайдено: '.$kol;
 //$this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <?//= Html::a('Добавити', ['createtransp'], ['class' => 'btn btn-success']) ?>
 <div class="site-spr">
-    <h5><?= Html::encode($zag) ?></h5>
+    <?php if($flag_like==0): ?>
+        <h5><?= Html::encode($zag) ?></h5>
+    <?php endif; ?>    
+     
+    <?php if($flag_like==1): ?>
+        <h5><?= Html::encode('Можливо Ви мали на увазі: ') ?> <span class="flag_like"><?= Html::encode($zag) ?></span></h5>
+    <?php endif; ?> 
+        
     <?php if(!isset(Yii::$app->user->identity->role)) { ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

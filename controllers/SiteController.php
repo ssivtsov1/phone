@@ -13,6 +13,7 @@ use yii\data\SqlDataProvider;
 use app\models\ContactForm;
 use app\models\InputData;
 use app\models\employees;
+use app\models\shtrafbat;
 use app\models\viewphone;
 use app\models\list_workers;
 use app\models\kyivstar;
@@ -34,7 +35,7 @@ class SiteController extends Controller
  *
  */
 
-    //public $defaultAction = 'index';
+    public $curpage;
 
     public function behaviors()
     {
@@ -93,17 +94,17 @@ class SiteController extends Controller
     //  Происходит после ввода пароля
     public function actionMore($sql='0')
     {
-      
+        $this->curpage=1;
         if($sql=='0') {
 
             $model = new InputData();
-
-            $last = 607;
+            $flag_fio = 0;
+            $last = 630;
             if ($model->load(Yii::$app->request->post())) {
                 //$searchModel = new employees();
                 // Создание поискового sql выражения
                 $where = '';
-
+                    
                 if (!empty($model->main_unit)) {
                     if ($model->main_unit == $last) {
                         $where .= ' ';
@@ -117,9 +118,12 @@ class SiteController extends Controller
                 if (!empty($model->unit_1)) {
 
                     if ($model->unit_1 == $last) $where .= ' ';
-                    else {
+                    else { 
                         $data = employees::find()->select(['unit_1'])
                             ->where('id=:id', [':id' => $model->unit_1])->all();
+                        
+                        
+                        
                         $unit_1 = $data[0]->unit_1;
                         if ($unit_1 != 'Відділ по роботі з юридичними споживачами електроенергії')
                             $where .= ' and unit_1=' . "'" . $unit_1 . "'";
@@ -138,7 +142,8 @@ class SiteController extends Controller
                     }
                 }
                 if (!empty($model->fio)) {
-                    $where .= ' and fio like ' . "'%" . $model->fio . "%'";
+                    $flag_fio = 1;
+                    $where .= ' and (fio like ' . "'%" . $model->fio . "%'" .' or fio_ru like ' . "'%" . $model->fio . "%')";
                 }
                 if (!empty($model->tel_mob)) {
                     $tel_mob = trim($model->tel_mob);
@@ -163,7 +168,7 @@ class SiteController extends Controller
                     $where = ' where ' . substr($where, 4);
 
 
-                $sql = "select *,rate_person(post) as sort1 from vw_phone " . $where . ' order by sort1,fio';
+                $sql = "select *,rate_person(post) as sort1,rate_group(unit_2) as sort2 from vw_phone " . $where . ' order by sort1,sort2,fio';
 
 //            debug($sql);
 //            return;
@@ -182,21 +187,64 @@ class SiteController extends Controller
 //            'asc' => ['sort' => SORT_ASC,'unit_2'=>SORT_ASC],
 //            'desc' => ['sort' => SORT_DESC,'unit_2' => SORT_DESC],
 //            ];
+                // Ищем похожие фамилии, если не найдена запись с введенной фамилией
+                // по алгоритму Левенштейна
+                $closest[0] = '';
+                
+                if($kol==0 && $flag_fio == 1) {
+                    $shortest = -1;
+                    $sql_l = "select distinct(first_word(fio)) as fio from vw_phone";
+                    $data_l = viewphone::findBySql($sql_l)->all();
+                    $j=0;
+                    foreach ($data_l as $v) {
+                        $vf = $v->fio;
+                        // вычисляем расстояние между входным словом и текущим
+                        $lev = levenshtein($model->fio, $vf);
 
-                                  
+                        // проверяем полное совпадение
+                        if ($lev == 0) {
+
+                            // это ближайшее слово (точное совпадение)
+                            $closest[$j] = $vf;
+                            $shortest = 0;
+
+                            // выходим из цикла - мы нашли точное совпадение
+                            break;
+                        }
+
+                        // если это расстояние меньше следующего наименьшего расстояния
+                        // ИЛИ если следующее самое короткое слово еще не было найдено
+                        if ($lev <= $shortest || $shortest < 0) {
+                            // устанивливаем ближайшее совпадение и кратчайшее расстояние
+                            if($lev<3){
+                                $closest[$j]  = $vf;
+                                $shortest = $lev;
+                                $j++;
+                            }
+                        }
+                        
+                    }
+                    
+                    }
+                    
+                 
+                
                 $session = Yii::$app->session;
                 $session->open();
                 $session->set('view', 1);
                 //'data' => $data
 
                 return $this->render('viewphone', [
-                    'dataProvider' => $dataProvider, 'searchModel' => $searchModel, 'kol' => $kol, 'sql' => $sql]);
+                    'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel, 'kol' => $kol,'sql' => $sql,'closest' => $closest]);
             } else {
                 return $this->render('inputdata', [
                     'model' => $model,
                 ]);
             }
-        }
+            }
+                
+            
         else{
              // Если передается параметр $sql
             $data = viewphone::findBySql($sql)->all();
@@ -227,7 +275,52 @@ class SiteController extends Controller
         return $this->render('employees', [
             'model' => $searchModel,'dataProvider' => $dataProvider,'searchModel' => $searchModel,
         ]);
+    }    
+
+
+// Подгрузка фамилий - происходит при наборе первых букв
+    public function actionGet_fio($fio)
+    {
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
+                
+        $name1 = trim(mb_strtolower($fio,"UTF-8"));
+        $name2 = trim(mb_strtoupper($fio,"UTF-8"));
+        if (mb_strlen($name1)>1){
+        if (Yii::$app->request->isAjax) {
+            $sql = 'select min(id) as id,fio,fio_ru,tel_mob,tel from vw_phone where fio like '.'"'.$name1.'%"'.' or fio_ru like '.'"'.$name1.'%"'.
+                    ' group by fio,fio_ru,tel_mob,tel order by fio';
+             $cur = viewphone::findBySql($sql)->all();
+            return ['success' => true, 'cur' => $cur];
+        }
+        else{
+            $cur=['id' => 0,'fio'=>'','fio_ru'=>''];
+            return ['success' => false, 'cur' => $cur];
+            
+        }
+        }
+        else{
+            $cur=['id' => 0,'fio'=>'','fio_ru'=>''];
+            return ['success' => false, 'cur' => $cur];
+        }            
+    }    
+    
+    // *** Просмотр должников по мобильной связи 
+    // срабатывает при переходе по ссылке в новостях сайта  
+    public function actionShtrafbat()
+    {
+        $searchModel = new shtrafbat();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        
+        $session = Yii::$app->session;
+        $session->open();
+        $session->set('view', 1);
+            
+        return $this->render('shtrafbat', [
+            'model' => $searchModel,'dataProvider' => $dataProvider,'searchModel' => $searchModel,
+        ]);
     }         
+    
     
     //    Удаление записей из справочника
     public function actionDelete($id,$mod,$sql)
@@ -445,7 +538,7 @@ class SiteController extends Controller
         $main_unit = $data[0]->main_unit;
 
        // if($main_unit<>"Підрозділи підпорядковані Генеральному директору")
-        $sql = "select 607 as nomer,'607  Всі підрозділи' as unit_1
+        $sql = "select 630 as nomer,'630  Всі підрозділи' as unit_1
                 union
                 select cast(min(id) as char(3)) as nomer,concat(cast(min(id) as char(3)),'  ',unit_1) as unit_1 
                 from vw_phone where main_unit="."'".$main_unit."'".
@@ -455,8 +548,8 @@ class SiteController extends Controller
 //            $sql = "select cast(min(id) as char(3)) as nomer,concat(cast(min(id) as char(3)),'  ',unit_1) as unit_1
 //            from vw_phone where main_unit="."'".$main_unit."'".
 //                ' group by unit_1';
-        if($id_name==607)
-            $sql = "select 607 as nomer,'607  Всі підрозділи' as unit_1
+        if($id_name==630)
+            $sql = "select 630 as nomer,'630  Всі підрозділи' as unit_1
                 union select cast(min(id) as char(3)) as nomer,concat(cast(min(id) as char(3)),'  ',unit_1) as unit_1 
              from vw_phone where LENGTH(ltrim(rtrim(unit_1)))<>0 group by unit_1";
 
@@ -473,7 +566,7 @@ class SiteController extends Controller
             $data = employees::find()->select(['unit_1'])->where('id=:id',[':id' => $id])->all();
             $unit_1 = $data[0]->unit_1;
 
-         $sql = "select 607 as nomer,'607  Всі підрозділи' as unit_2,0 as sort,'607  Всі підрозділи' as unit_3 
+         $sql = "select 630 as nomer,'630  Всі підрозділи' as unit_2,0 as sort,'630  Всі підрозділи' as unit_3 
                 union
              select cast(min(id) as char(3)) as nomer,concat(cast(min(id) as char(3)),'  ',unit_2) as unit_2,
           if(unit_2='Керівництво',0,1) as sort,unit_2 as unit3
@@ -481,8 +574,8 @@ class SiteController extends Controller
              ' and main_unit='."'".$main_unit."'".
              ' group by unit_2 order by 3,4';
 
-            if($id==607)
-                $sql = "select 607 as nomer,'607  Всі підрозділи' as unit_2,0 as sort,'607  Всі підрозділи' as unit_3 
+            if($id==630)
+                $sql = "select 630 as nomer,'630  Всі підрозділи' as unit_2,0 as sort,'630  Всі підрозділи' as unit_3 
                 union
                 Select cast(min(id) as char(3)) as nomer,concat(cast(min(id) as char(3)),'  ',unit_2) as unit_2,
                  if(unit_2='Керівництво',0,1) as sort,unit_2 as unit3

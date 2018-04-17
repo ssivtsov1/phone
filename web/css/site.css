@@ -710,7 +710,8 @@ body{
     font-size: 10px;
     text-align: center;
     /*background-color: #F5F5F5;*/ 
-    background-color: #493A34;
+    /*background-color: #493A34;*/
+    background-color: #2D3336;
 /*    //background-color: #2C2C2D;*/
     border: none;
     color: #C5AB8F;
@@ -750,12 +751,14 @@ body{
 }
 
 .footer {
-   background-color: #493A34;
+   /*background-color: #493A34;*/
+    background-color: #2D3336;
    /*background-color: #2C2C2D;*/
 }
 
 #container_footer {
-    background-color: #493A34;
+    /*background-color: #493A34;*/
+    background-color: #2D3336;
     /*background-color: #2C2C2D;*/
     width: auto;
     margin-left: 0;
@@ -776,4 +779,70 @@ body{
 }
 .site-spr{
     margin-left: 30px;
+}
+.flag_like {
+    color: #1A0DAB;
+    font-weight: 600;
+    text-decoration: underline;
+    
+}
+.tel_left_side{
+    float: left;
+}
+.tel_right_side{
+    float: right;
+    width: 37%;
+    /*margin-top: 12px;*/
+    padding-top: 10px;
+    padding-left: 7px;
+    padding-right:7px;
+    box-shadow: 0 1px 3px 0px rgba(0,0,0,0.27);
+}
+
+.tel_right_side a {
+    color: #22579e;
+}
+
+.tel_news {
+    font: bold 16px Arial;
+    border-bottom: solid 1px #d9d9d9;;
+    text-align: center;
+    color: #22579e;
+    text-decoration: underline;
+}
+
+.tel_news_r {
+    border-bottom: solid 1px #d9d9d9;
+}
+.tel_news_n {
+    float: left;
+    width: 15%;
+    /*color: #fda237;*/
+    color: red;
+}
+.tel_news_block {
+    float: right;
+    width: 81%;
+}
+.field-inputdata-id_t{
+    display: none;
+}
+.weather{
+    float: right;
+    /*width: 20%;*/
+    /*margin-top: 12px;*/
+    padding-top: 40px;
+    padding-left: 7px;
+}
+
+#MeteoInformerWrap {
+    float: right;
+    padding-top: 40px;
+    margin-right: 150px;
+    width: 200px;
+    height:150px;
+}
+
+#meteoInforWrap .meteo_infor_other{
+    display: none;
 }

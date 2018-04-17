@@ -8,10 +8,26 @@ use yii\helpers\Url;
 $this->title = 'Телефонний довідник (ЦЄК)';
 ?>
 
-<div class="site-login" <?php if(isset(Yii::$app->user->identity->role)) echo 'id="main_block"'; ?>>
+<script>
+     window.addEventListener('load', function(){
+       $('#inputdata-id_t').each(function () {
+        var txt = $(this).text()
+        $(this).html(
+            "<span style='color:#111111" + ";'></span>" + txt)
+})
+    }
+    
+</script>
+
+
+
+<div class="site-login" <?php if(isset(Yii::$app->user->identity->role) && Yii::$app->user->identity->role==3) echo 'id="main_block"'; ?>>
     <h2><?= Html::encode('') ?></h2>
       <div class="row">
-        <div <?php if(isset(Yii::$app->user->identity->role)) echo 'class="col-lg-8"'; else echo 'class="col-lg-6"'; ?>>
+         
+          <?php //debug(Yii::$app->user->identity); ?> 
+          
+        <div <?php if(isset(Yii::$app->user->identity->role) && Yii::$app->user->identity->role==3) echo 'class="col-lg-8"'; else echo 'class="col-lg-6 tel_left_side"'; ?>>
             <?php $form = ActiveForm::begin(['id' => 'inputdata',
                 'options' => [
                     'class' => 'form-horizontal col-lg-25',
@@ -21,7 +37,7 @@ $this->title = 'Телефонний довідник (ЦЄК)';
 
             <?=$form->field($model, 'main_unit')->dropDownList(
                     ArrayHelper::map(app\models\employees::findbysql(
-                            "select 607 as id_name,0 as id,null as nazv,'Всі підрозділи' as main_unit
+                            "select 630 as id_name,0 as id,null as nazv,'Всі підрозділи' as main_unit
                                 union
                                 select min(a.id_name) as id_name,b.id,b.nazv,a.main_unit 
                                 from vw_phone a 
@@ -51,7 +67,7 @@ $this->title = 'Телефонний довідник (ЦЄК)';
             <?=$form->field($model, 'unit_1')->
             dropDownList(ArrayHelper::map(
                 app\models\employees::findbysql('
-                select 607 as id," Всі підрозділи" as unit_1
+                select 630 as id," Всі підрозділи" as unit_1
                 union
                 Select min(id) as id,unit_1 
                 from vw_phone 
@@ -79,7 +95,7 @@ $this->title = 'Телефонний довідник (ЦЄК)';
             <?=$form->field($model, 'unit_2')->
             dropDownList(ArrayHelper::map(
                 app\models\employees::findbysql('
-                select 607 as id," Всі підрозділи" as unit_2
+                select 630 as id," Всі підрозділи" as unit_2
                 union
                 Select min(id) as id,unit_2 
                 from vw_phone 
@@ -90,9 +106,80 @@ $this->title = 'Телефонний довідник (ЦЄК)';
                 ['prompt' => 'Виберіть підрозділ'
                     ]); ?>
 
-            <?= $form->field($model, 'fio',['inputTemplate' => '<div class="input-group"><span class="input-group-addon">'
+          <!-- <?= $form->field($model, 'fio',['inputTemplate' => '<div class="input-group"><span class="input-group-addon">'
             . '<span class="glyphicon glyphicon-user"></span></span>{input}</div>'])
-                ->textInput(['onDblClick' => 'rmenu($(this).val(),"#inputdata-fio")'])?>
+                ->textInput(['onDblClick' => 'rmenu($(this).val(),"#inputdata-fio")'])?> -->
+            
+            
+             <?= $form->field($model, 'fio',['inputTemplate' => '<div class="input-group"><span class="input-group-addon">'
+            . '<span class="glyphicon glyphicon-user"></span></span>{input}</div>'])
+                ->textInput(
+                ['autocomplete' => 'off','maxlength' => true,'onkeyup' => '$.get("' . Url::to('/phone/web/site/get_fio?fio=') .
+                    '"+$(this).val(),
+                   function(data) {
+                         $("#inputdata-id_t").empty();
+                         //alert(data.cur.length);
+                         var j=data.cur.length;
+                         if(j<6){
+                         // Находим самую длинную строку
+                         var lmax=0,sfio,lfio;
+                         for(var ii = 0; ii<j; ii++) {
+                             sfio = data.cur[ii].fio;
+                             lfio = sfio.length;
+                            if(lfio>lmax)
+                                lmax=lfio;
+                         }
+                         //alert(lmax);
+                         for(var ii = -1; ii<j; ii++) {
+                         if(ii==-1) { var q1=" ";var q2=" ";var n = 20000;
+                            $("#inputdata-id_t").append("<option onClick="+String.fromCharCode(34)+"sel_fio($(this).text(),"+n+");"
+                            +String.fromCharCode(34)+" value="+n+">"+q1+"  "+q2+
+                            "</option>");
+                         }
+                         else {
+                         var w=data.cur[ii].tel_mob;
+                         sfio = data.cur[ii].fio;
+                         lfio = sfio.length;
+                         //alert(lmax-lfio);
+                         //&#8195;
+//                         if((lmax-lfio)>0)
+//                             sfio = sfio+stringFill("&#8195;",(lmax-lfio)*2);
+//                         else    
+//                             sfio = sfio+"&nbsp;";
+                         
+                         //alert("1"+stringFill(" ",(lmax-lfio))+"1");
+                         if(w==null || w=="" || normtel(w)=="") {var q1 = sfio;
+                            }
+                         else {var q1 = sfio +"  <span>"+", "+normtel(w)+"</span>";}
+                         
+                         var w1=data.cur[ii].tel;
+                         
+                         if(!(w1==null || w1=="")) var q1 = q1+"  <span>"+", "+w1+"</span>";
+                        
+                         var n = data.cur[ii].id;
+                        // if(q1==null && ii<>0) continue;
+//                         var q1 = q.substr(6);
+//                         var n = q.substr(0,6);
+                        
+                         $("#inputdata-id_t").append("<option onClick="+String.fromCharCode(34)+"sel_fio($(this).text(),"+n+");"
+                         +String.fromCharCode(34)+" value="+n+">"+q1+
+                         "</option>");
+                         //$("#inputdata-id_t").append("<option value="+n+">"+"<span>"+q1+"</span></option>");
+                         $("#inputdata-id_t").attr("size", ii+2);
+                         //$("#klient-id_t").focus();
+                         $("#inputdata-id_t").show();
+                         $(".field-inputdata-id_t").show();
+                        }}} 
+                        if(j>5 || data.success==false) {$("#inputdata-id_t").hide();
+                            $(".field-inputdata-id_t").hide();}
+                            
+                  });',
+                    'onDblClick' => 'rmenu($(this).val(),"#inputdata-fio")'
+                ]) ?>
+            
+            
+            <?=$form->field($model, 'id_t')->
+            dropDownList(['maxlength' => true,"onchange"=>"sel_fio1(this,event)"]) ?>
 
             <div class='rmenu' id='rmenu-inputdata-fio'></div>
 
@@ -121,6 +208,32 @@ $this->title = 'Телефонний довідник (ЦЄК)';
             
             ActiveForm::end(); ?>
         </div>
+          
+        <?php if(!(isset(Yii::$app->user->identity->role) && Yii::$app->user->identity->role==3)): ?>
+        <div class="tel_right_side"> 
+            <p class="tel_news">Новини сайту</p>
+            <br>
+            <p class="tel_news_r">1. Увага! З'явилась нова послуга <a href="http://192.168.55.1/proffer">«Книга скарг та пропозицій»</a></p>
+            <p class="tel_news_n"> <?= Html::encode('2.[Нове!!!] ');?> </p>
+                <div class="tel_news_block">
+                    <?php echo Html::a("Список працівників, які перевисили ліміт по мобільному зв'язку за березень 2018 р.", ['/shtrafbat']); ?>
+                </div>    
+            </p>
+            
+        </div>  
+            
+            <!-- weather widget start -->
+<!--            <a class="weather" target="_blank" href="http://nochi.com/weather/dnipro-33401">
+                <img src="https://w.bookcdn.com/weather/picture/2_33401_1_20_137AE9_160_ffffff_333333_08488D_1_ffffff_333333_0_6.png?scode=124&domid=604&anc_id=26065"  alt="booked.net"/>
+            </a> weather widget end -->
+            
+           <div id="MeteoInformerWrap">
+            <script type="text/javascript" src="http://meteo.ua/var/informers.js"></script>
+            <script type="text/javascript">
+            makeMeteoInformer("http://meteo.ua/informer/get.php?cities=164&w=280&lang=ua&rnd=1&or=vert&clr=4&dt=today&style=classic",276,525);
+            </script>
+            </div>
+        <?php endif; ?>  
     </div>
 </div>
 
@@ -131,13 +244,114 @@ $this->title = 'Телефонний довідник (ЦЄК)';
 
         localStorage.setItem("fio",$('#inputdata-fio').val());
     }
+    function sel_fio(elem,id) {
+        //localStorage.setItem("id_fio", id);
+        var p,r;
+        elem=$.trim(elem);
+        //alert(elem+'1');
+        p=elem.indexOf('  ')+1;
+        r=elem.substr(0,p);
+        r=$.trim(r);
+       
+        if(p>0)
+            $("#inputdata-fio").val(r);
+        else
+            $("#inputdata-fio").val(elem);
+        
+        $(".field-inputdata-id_t").hide();
+        $("#inputdata-id_t").hide();
+        //$("#klient-search_street").val('');
+        
+    }
+     function sel_fio1(elem,event) {
+        //alert(event.keyCode);
+        if(event.keyCode==13) {
+            $("#inputdata-fio").val(elem);
+            $("#inputdata-id_t").hide();
+        }
+    }
+    
+     function normtel(p){
+        if(p==null) return '';
+        if(!(p.indexOf(',')==-1)) return '';
+        if(!(p.substr(0,1)=='0'))
+            p='0'+p; 
+        var y,i,c,tel = '',kod,op,flag=0,rez='';
+        y = p.length;
+
+        for(i=0;i<y;i++)
+        {
+            c = p.substr(i,1);
+            kod=p.charCodeAt(i);
+            if(kod>47 && kod<58) tel+=c;
+        }
+        op = tel.substr(0,3);
+        y = tel.length;
+        if(y<10) {
+            return '';
+        }
+            switch(op) {
+                case '050':  flag = 1;
+                    break;
+                case '096':  flag = 1;
+                    break;
+                case '097':  flag = 1;
+                    break;
+                case '098':  flag = 1;
+                    break;
+                case '099':  flag = 1;
+                    break;
+
+                case '091':  flag = 1;
+                    break;
+                case '063':  flag = 1;
+                    break;
+                case '073':  flag = 1;
+                    break;
+                case '067':  flag = 1;
+                    break;
+                case '066':  flag = 1;
+                    break;
+
+                case '093':  flag = 1;
+                    break;
+                case '095':  flag = 1;
+                    break;
+                case '039':  flag = 1;
+                    break;
+                case '068':  flag = 1;
+                    break;
+                case '092':  flag = 1;
+                    break;
+                case '094':  flag = 1;
+                    break;
+            }
+
+            var add = tel.substr(3,3);
+            rez+=add+'-';
+            add = tel.substr(6,2);
+            rez+=add+'-';
+            add = tel.substr(8);
+            rez+=add;
+
+        if(flag) {
+            rez = op+' '+rez;
+        }
+        else{
+            rez = '('+op+')'+' '+rez;
+        }
+        return rez;
+    }
+
+function stringFill(x, n) { 
+    var s = ''; 
+    while (s.length < n) s += x; 
+    return s; 
+} 
 
 
     //window.onload=function(){
-    $(document).ready(){
-        alert( '1' );
-
-    };
+   
 </script>
 
 

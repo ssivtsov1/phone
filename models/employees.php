@@ -27,7 +27,7 @@ class Employees extends \yii\db\ActiveRecord
             'main_unit' => 'Гол. підрозділ',
             'unit_1' => 'Підпор. підрозділ',
             'unit_2' => 'Група',
-            'tel_mob' => 'Моб.тел.',
+            'tel_mob' => 'Моб. тел.',
             'email' => 'Особова пошта',
             'email_group' => 'Пошта відділу',
             'rate' => 'Тарифний план',

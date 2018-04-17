@@ -19,6 +19,7 @@ class InputData extends Model
     public $tel;              // Телефон внутр.
     public $tel_town;         // Телефон городской.
     public $email;            //  E-Mail 
+    public $id_t;
     
     private $_user;
 
@@ -26,6 +27,7 @@ class InputData extends Model
     {
         return [
             'main_unit' => 'Головний підрозділ:',
+            'id_t' => '',
             'unit_1' => 'Підрозділ, підпорядкований головному:',
             'unit_2' => 'Група:',
             'fio' => 'П.І.Б.:',
@@ -50,6 +52,7 @@ class InputData extends Model
             ['tel_mob', 'safe'],
             ['tel_town', 'safe'],
             ['email', 'safe'],
+            ['id_t', 'safe'],
         ];
     }
 

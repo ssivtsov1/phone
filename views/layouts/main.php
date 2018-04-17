@@ -89,6 +89,7 @@ AppAsset::register($this);
                             'url' => ['/site/index']],
                         
                         ['label' => 'Працівники', 'url' => ['/site/employees']],
+                        ['label' => 'Книга скарг та пропозицій', 'url' => 'http://192.168.55.1/proffer'],
                         ['label' => 'Про сайт', 'url' => ['/site/about']],
                         ['label' => Html::tag('span',' Вийти',['class' => 'glyphicon glyphicon-log-out']),
                              'url' => ['/site/logout'], 'linkOptions' => ['data-method' => 'post']],
@@ -104,6 +105,7 @@ AppAsset::register($this);
                        ['label' => 'Головна', 'url' => ['/site/index']],
                         
                         ['label' => 'Працівники', 'url' => ['/site/employees']],
+                        ['label' => 'Книга скарг та пропозицій', 'url' => 'http://192.168.55.1/proffer'],
                         ['label' => 'Про сайт', 'url' => ['/site/about']],
                         //['label' => 'Вийти', 'url' => ['/site/logout'], 'linkOptions' => ['data-method' => 'post']],
                         /*
@@ -126,6 +128,7 @@ AppAsset::register($this);
                             'url' => ['/site/index']],
                         
                         ['label' => 'Працівники', 'url' => ['/site/employees']],
+                        ['label' => 'Книга скарг та пропозицій', 'url' => 'http://192.168.55.1/proffer'],
                         ['label' => 'Про сайт', 'url' => ['/site/about']],
                         
                         //['label' => 'Вийти', 'url' => ['/site/logout'], 'linkOptions' => ['data-method' => 'post']],
@@ -200,6 +203,8 @@ AppAsset::register($this);
              
             <?= $content ?>
             
+            
+            
         </div>
         <section class="hero_area">
         </section>  
@@ -213,7 +218,7 @@ AppAsset::register($this);
             <?= Html::a('Головна',["index"],['class' => 'a_main']); ?> &nbsp &nbsp
             <?= Html::a("<a class='a_main' href='http://cek.dp.ua'>сайт ПрАТ ПЕЕМ ЦЕК</a>"); ?>
             </p>
-            <p class="pull-right"><?//= Yii::powered() ?> 
+            <p class="pull-right">
             <img class='footer_img' src="../Logo.png">
             </p>
             <?php

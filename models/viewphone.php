@@ -15,6 +15,7 @@ class Viewphone extends \yii\db\ActiveRecord
 {
     public $sort1;
     public $sql;
+    
 
     public static function tableName()
     {
@@ -25,8 +26,10 @@ class Viewphone extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            
             'tab_nom' => 'Таб. №',
             'fio' => 'П.І.Б.',
+            'fio_ru' => 'П.І.Б.[ru]',
             'post' => 'Посада',
             'main_unit' => 'Гол. підрозділ',
             'unit_1' => 'Підпор. підрозділ',
@@ -51,7 +54,7 @@ class Viewphone extends \yii\db\ActiveRecord
 
             [['id','tab_nom','fio','post','main_unit','unit_1','unit_2','tel_mob','remark',
                 'email','rate','tel_town','tel','line','nazv','type_tel',
-                'phone_type','sort1','email_group','sql'],'safe']
+                'phone_type','sort1','email_group','sql','fio_ru'],'safe']
             ];
     }
 
