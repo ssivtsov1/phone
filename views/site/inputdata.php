@@ -179,7 +179,7 @@ $this->title = 'Телефонний довідник (ЦЄК)';
             
             
             <?=$form->field($model, 'id_t')->
-            dropDownList(['maxlength' => true,"onchange"=>"sel_fio1(this,event)"]) ?>
+            dropDownList(['maxlength' => true,"onchange"=>"sel_fio1(this,event)",['rows' => 3, 'cols' => 55]]) ?>
 
             <div class='rmenu' id='rmenu-inputdata-fio'></div>
 
@@ -216,7 +216,7 @@ $this->title = 'Телефонний довідник (ЦЄК)';
             <p class="tel_news_r">1. Увага! З'явилась нова послуга <a href="http://192.168.55.1/proffer">«Книга скарг та пропозицій»</a></p>
             <p class="tel_news_n"> <?= Html::encode('2.[Нове!!!] ');?> </p>
                 <div class="tel_news_block">
-                    <?php echo Html::a("Список працівників, які перевисили ліміт по мобільному зв'язку за березень 2018 р.", ['/shtrafbat']); ?>
+                    <?php echo Html::a("Список працівників, які перевисили ліміт по мобільному зв'язку за квітень 2018 р.", ['/shtrafbat']); ?>
                 </div>    
             </p>
             
@@ -273,7 +273,24 @@ $this->title = 'Телефонний довідник (ЦЄК)';
     
      function normtel(p){
         if(p==null) return '';
-        if(!(p.indexOf(',')==-1)) return '';
+        //if(!(p.indexOf(',')==-1)) return '';
+        var pos = p.indexOf(',');
+        var qt,jt,frez='',origin;
+        origin=p;
+        if (pos==-1)
+            qt=1;
+        else
+            qt=2;
+        if(qt==2)
+            $("#inputdata-id_t").css("font-size", 13);
+        else
+            $("#inputdata-id_t").css("font-size", 14);
+        for(jt=1;jt<=qt;jt++) {
+        if (pos>-1 && jt==1)
+            p=origin.substr(0,pos); 
+        if (pos>-1 && jt==2)
+            p=origin.substr(pos+1);
+        //alert(p);
         if(!(p.substr(0,1)=='0'))
             p='0'+p; 
         var y,i,c,tel = '',kod,op,flag=0,rez='';
@@ -340,7 +357,15 @@ $this->title = 'Телефонний довідник (ЦЄК)';
         else{
             rez = '('+op+')'+' '+rez;
         }
-        return rez;
+            
+            if(qt==2 && jt==1)
+                frez=rez+', ';
+            if(qt==2 && jt==2)
+                frez+=rez;
+             if(qt==1)
+                frez=rez;
+        }
+        return frez;
     }
 
 function stringFill(x, n) { 

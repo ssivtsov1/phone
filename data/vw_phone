@@ -1,5 +1,5 @@
 create view vw_phone as
-select a.*,b.tel as tel_mob,b.rate,b.type_tel,
+select a.*,IF(isnull(i.tab_nom),b.tel,concat(b.tel,', ',i.tel)) as tel_mob,b.rate,b.type_tel,
 c.tel,c.tel_town,c.phone_type,c.line,c.nazv,
 d.username as email,e.username as email_group
 from 1c a
@@ -7,3 +7,5 @@ left join kyivstar b on a.tab_nom = b.tab_nom
 left join hipatch c on a.tab_nom = c.tab_nom
 left join mailbox d on a.tab_nom = d.tab_nom and d.tab_nom<>0
 left join mailbox e on a.id_podr = e.name and e.tab_nom=0
+left join mts i on a.tab_nom = i.tab_nom
+
