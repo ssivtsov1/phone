@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-param" content="_csrf">
+    <meta name="csrf-token" content="uvgN_i8QTAZFX7468vBUZfbMZsddHTVeratNvaQYjtRY9t7ep0zxGDAY_BoGQyP8LqEoU5r7zpSEFfBAJWJVxw==">
+    <title>Розрахунок вартості робіт</title>
+    <link href="assets/31c9acc1/css/bootstrap.css" rel="stylesheet">
+<link href="css/site.css" rel="stylesheet"></head>
+<body>
+
+    <div class="wrap">
+        <nav id="w0" class="navbar-inverse navbar-fixed-top navbar" role="navigation"><div class="container"><div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#w0-collapse"><span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span></button><a class="navbar-brand" href="index.html">Розрахунок вартості робіт</a></div><div id="w0-collapse" class="collapse navbar-collapse"><ul id="w1" class="navbar-nav navbar-right nav"><li><a href="index">Головна</a></li>
+<li><a href="about">Про программу</a></li>
+<li><a href="contact">Контакти</a></li></ul></div></div></nav>
+
+        <!--Вывод логотипа-->
+                
+                    <img class="logo_site" src="../Logo.png" alt="ЦЕК" />
+                
+        
+
+        <div class="container">
+            <div class="page-header">
+                <small class="text-info">Кол-центр: <mark>0 800 300 015</mark> безкоштовно цілодобово</small></h1>
+            </div>
+                        
+<script>
+    // Показывает или прячет блок время работы (в зависимости от выбранной машины)
+    // работает только при выборе транспортных услуг
+    // если первый символ текста выбр. машины '-', тогда работа прячется, т.к. сумма работы в табл. Transport
+    // для этого автомобиля не проставлена.
+    function hidepole_rabota(p){
+    var f = p.substr(1,1);
+    //    alert(localStorage.getItem("usluga"));
+    if(localStorage.getItem("usluga")=="transp") {
+        if (f == '-') {
+            $('.field-inputdataform-time_work').hide();
+        }
+        else {
+            $('.field-inputdataform-time_work').show();
+        }
+    }
+    }
+
+    function find_on_map(addr){
+        localStorage.setItem("addr_work", addr);
+       
+        setTimeout(function () {
+                        initMap();
+                    }, 300); // время в мс
+                    
+
+    }
+
+    window.onload=function(){
+        //$("#inputdataform-potrebitel").hide();
+        localStorage.setItem("geo_res", '');
+        localStorage.setItem("geo_lat", '');
+        localStorage.setItem("geo_lng", '');
+        localStorage.setItem("geo_lat_sd", '');
+        localStorage.setItem("geo_lng_sd", '');
+        localStorage.setItem("geo_lat_sz", '');
+        localStorage.setItem("geo_lng_sz", '');
+        localStorage.setItem("id_res", '');
+        localStorage.setItem("usluga", '');
+        //localStorage.setItem("work", '');
+        localStorage.setItem("town_sz", '');
+        localStorage.setItem("town_sd", '');
+        var geo,y1,p1,lat,lon;
+        geo = $("#inputdataform-geo").val();
+        localStorage.setItem("geo_marker", '');
+        localStorage.setItem("geo_k", '');
+        //alert(geo);
+        if(geo!='') {
+            y1 = geo.length;
+            p1 = geo.indexOf(',') - 1
+            lat = geo.substring(0, p1);
+            lon = geo.substring(p1 + 2);
+            localStorage.setItem("geo_lat", lat);
+            localStorage.setItem("geo_lng", lon);
+            localStorage.setItem("geo_lat_save", lat);
+            localStorage.setItem("geo_lng_save", lon);
+            localStorage.setItem("geo_marker", '('+geo+')');
+            localStorage.setItem("geo_k", geo);
+//            alert(localStorage.getItem("geo_marker"));
+//            alert(localStorage.getItem("geo_k"));
+            $("#inputdataform-res").change();
+            //initMap();
+        }
+
+        var p,u = $("#inputdataform-potrebitel").val();
+        //alert(u.length);
+        p = u.length;
+        if(p!=0)
+        $("#inputdataform-potrebitel").blur();
+    }
+
+
+
+</script>
+
+<div class="site-login">
+
+    <h2>Розрахунок вартості робіт</h2>
+
+    <p>Введіть параметри для розрахунку:</p>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <form id="inputdata" class="form-horizontal col-lg-25" action="../../CalcWork.2" method="post" enctype="multipart/form-data">
+<input type="hidden" name="_csrf" value="uvgN_i8QTAZFX7468vBUZfbMZsddHTVeratNvaQYjtRY9t7ep0zxGDAY_BoGQyP8LqEoU5r7zpSEFfBAJWJVxw==">
+           
+            <div class="form-group field-inputdataform-res required">
+<label class="control-label" for="inputdataform-res">РЕМ:</label>
+<select id="inputdataform-res" class="form-control" name="InputDataForm[res]" onchange="$.get(&quot;/CalcWork/web/site/getres?id=&quot;+$(this).val(),
+                    function(data) {
+                     localStorage.setItem(&quot;geo_res&quot;, data.geo_koord);
+                     var geo_marker = localStorage.getItem(&quot;geo_marker&quot;);
+
+                     if(geo_marker==&quot;&quot;) {
+                     localStorage.setItem(&quot;geo_lat&quot;, data.lat);
+                     localStorage.setItem(&quot;geo_lng&quot;, data.lng);
+                     }
+                     localStorage.setItem(&quot;geo_lat_res&quot;, data.lat);
+                     localStorage.setItem(&quot;geo_lng_res&quot;, data.lng);
+                     
+                     localStorage.setItem(&quot;geo_lat_sd&quot;, data.lat_sd);
+                     localStorage.setItem(&quot;geo_lng_sd&quot;, data.lng_sd);
+                     localStorage.setItem(&quot;geo_lat_sz&quot;, data.lat_sz);
+                     localStorage.setItem(&quot;geo_lng_sz&quot;, data.lng_sz);
+                     localStorage.setItem(&quot;town_sd&quot;, data.town_sd);
+                     localStorage.setItem(&quot;town_sz&quot;, data.town_sz);
+                     localStorage.setItem(&quot;id_res&quot;, data.id);
+                     //alert(data.geo_koord); 
+                    // if((&quot;#inputdataform-usluga&quot;).val()==&quot;Транспортні послуги&quot;)
+//                     if(geo_marker==&quot;&quot;)
+//                     var qza = $(&quot;#inputdataform-work&quot;).val();
+//                     alert(qza);
+
+                     //if(geo_marker==&quot;&quot;)
+                     $(&quot;#inputdataform-usluga&quot;).change();
+                     
+                     //$(&quot;#inputdataform-work&quot;).change();
+                     
+//                     if(geo_marker==&quot;&quot;)
+//                     $(&quot;#inputdataform-work&quot;).val(qza);
+                     
+                    $(&quot;.dst&quot;).val(0); 
+                    $(&quot;.primech&quot;).text(&quot;&quot;);
+                    $(&quot;.adr_potr&quot;).text(&quot;&quot;);
+                    setTimeout(function () {
+                        initMap();
+                    }, 700); // время в мс
+                       
+                });" aria-required="true">
+<option value="">Виберіть виробничий підрозділ, який обслуговує Ваш регіон.</option>
+<option value="1">Апостоловські РЕМ</option>
+<option value="2">Вільногірські РЕМ</option>
+<option value="3">Гвардійські РЕМ</option>
+<option value="4">Дніпропетровські РЕМ</option>
+<option value="5">Жовтоводські РЕМ</option>
+<option value="6">Павлоградські РЕМ</option>
+<option value="7">Інгулецькі РЕМ</option>
+<option value="8">Криворізькі РЕМ</option>
+<option value="11">Запорізькі РЕМ</option>
+</select>
+
+<p class="help-block help-block-error"></p>
+</div>           
+            
+
+            <div class="form-group field-inputdataform-potrebitel">
+<label class="control-label" for="inputdataform-potrebitel">Споживач ІНН:</label>
+<input type="text" id="inputdataform-potrebitel" class="form-control" name="InputDataForm[potrebitel]" maxlength="10" onblur="$.get(&quot;/CalcWork/web/site/getklient?inn=&quot;+$(this).val(),
+                    function(data) {
+                    // alert(data.nazv); 
+                    $(&quot;.field-inputdataform-nazv&quot;).show();
+                    $(&quot;.field-inputdataform-addr&quot;).show();
+                    $(&quot;#inputdataform-nazv&quot;).empty();
+                    $(&quot;#inputdataform-addr&quot;).empty();
+                    $(&quot;#inputdataform-nazv&quot;).val(data.nazv); 
+                    $(&quot;#inputdataform-addr&quot;).val(data.addr);
+                    if(data.nazv==&quot;&quot;)
+                    {$(&quot;.nazv_kl&quot;).text(&quot;Споживач не зареєстрований. Потрібно зареєтруватись.&quot;);
+                     $(&quot;.nazv_kl&quot;).show();
+                     $(&quot;.s_reestr&quot;).show();
+                    }
+                    else
+                    { $(&quot;.nazv_kl&quot;).hide();
+                      $(&quot;.s_reestr&quot;).hide();
+                      $(&quot;.help-block-error&quot;).text(&quot;&quot;);
+                      $(&quot;#inputdataform-nazv&quot;).focus();
+                      $(&quot;#inputdataform-nazv&quot;).blur();
+                    }
+                       
+                });">
+
+<p class="help-block help-block-error"></p>
+</div>            <span class="nazv_kl"></span>
+
+            <a class='s_reestr' href="site/registr">Реєстрація</a>
+<!--            <a class="s_reestr" href="./web/site/registr">Реєстрація</a>-->
+
+            <div class="form-group field-inputdataform-nazv">
+<label class="control-label" for="inputdataform-nazv">Споживач назва: </label>
+<input type="text" id="inputdataform-nazv" class="form-control" name="InputDataForm[nazv]" value="" readonly>
+
+<p class="help-block help-block-error"></p>
+</div>            <div class="form-group field-inputdataform-addr">
+<label class="control-label" for="inputdataform-addr">Адреса споживача: </label>
+<input type="text" id="inputdataform-addr" class="form-control" name="InputDataForm[addr]" readonly>
+
+<p class="help-block help-block-error"></p>
+</div>
+<!--            <span class="nazv_kl"></span>-->
+<!--            <br/>-->
+<!--            <span class="adr_kl"></span>-->
+
+            <div class="form-group field-inputdataform-usluga">
+<label class="control-label" for="inputdataform-usluga">Напрямок роботи (послуги):</label>
+<select id="inputdataform-usluga" class="form-control" name="InputDataForm[usluga]" onchange="$.get(&quot;/CalcWork/web/site/getworks?id=&quot;+$(this).val()+&quot;&amp;res=&quot;+localStorage.getItem(&quot;id_res&quot;),
+                    function(data) {
+                         var flag=0,fl=0;
+                         var geo_marker = localStorage.getItem(&quot;geo_marker&quot;);
+                         if(geo_marker!=&quot;&quot;)
+                         {var tmp_work = $(&quot;#inputdataform-work&quot;).val();
+                         }
+                         localStorage.setItem(&quot;work&quot;, &quot;&quot;);
+                         localStorage.setItem(&quot;usluga&quot;, &quot;&quot;);
+                         //if(geo_marker==&quot;&quot;)
+                         $(&quot;#inputdataform-work&quot;).empty();
+                         for(var ii = 0; ii&lt;data.works.length; ii++) {
+                         var q = data.works[ii].work;
+                         //alert(q);
+                         if(q==null) continue;
+                         var q1 = q.substr(3);
+                         var n = q.substr(0,3);
+                         //var pr_rab = q.substr(4,1);
+                         //if(geo_marker==&quot;&quot;) 
+                         $(&quot;#inputdataform-work&quot;).append(&quot;&lt;option value=&quot;+n+&quot;&gt;&quot;+q1+&quot;&lt;/option&gt;&quot;);
+                         if(+n&gt;=166) flag=1; // Транспортні послуги
+                         if(+n==90)  fl=1;
+                         if((+n==88) || (+n==37)) fl=2;
+                         //alert(n);
+                        } 
+                         if(geo_marker!=&quot;&quot;)
+                         {$(&quot;#inputdataform-work&quot;).val(tmp_work);
+                         }
+                         if(flag==1) {
+                             localStorage.setItem(&quot;usluga&quot;, &quot;transp&quot;);  // Признак что выбраны Транспортні послуги
+                             $(&quot;.field-inputdataform-time_work&quot;).show();
+                             $(&quot;.field-inputdataform-time_prostoy&quot;).show();
+                             $(&quot;.field-inputdataform-kol&quot;).hide();
+                             $(&quot;.field-inputdataform-poezdka&quot;).hide();
+                         }
+                         if(flag==0) {
+                             $(&quot;.field-inputdataform-time_work&quot;).hide();
+                             $(&quot;.field-inputdataform-time_prostoy&quot;).hide();
+                             $(&quot;.field-inputdataform-kol&quot;).show();
+                             $(&quot;.field-inputdataform-poezdka&quot;).show();
+                         }
+                         if(fl==1) localStorage.setItem(&quot;work&quot;, &quot;sd&quot;);
+                         if(fl==2) localStorage.setItem(&quot;work&quot;, &quot;sz&quot;);
+                         $(&quot;.primech&quot;).text(&quot;&quot;);
+                         //alert(localStorage.getItem(&quot;work&quot;));
+                         var geo_marker = localStorage.getItem(&quot;geo_marker&quot;);
+                         //if(geo_marker==&quot;&quot;) 
+                         $(&quot;#inputdataform-work&quot;).change();
+                  });">
+<option value="">Виберіть послугу</option>
+<option value="41">Видача технічних умов</option>
+<option value="86">Визов інспектора</option>
+<option value="109">Нагляд за роботами в охоронної зони електромереж</option>
+<option value="2">Оформлення дозволу на виконання робіт в охоронній зоні електричних мереж</option>
+<option value="5">Підключення та/або відключення електроустановок</option>
+<option value="48">Погодження проектної документації</option>
+<option value="37">Позачергова технічна перевірка правильності роботи засобів обліку</option>
+<option value="90">Послуги електротехнічної лабораторії (електротехнічні випробування та вимірювання)</option>
+<option value="100">Послуги з технічного обслуговування об&#039;єктів</option>
+<option value="172">Ремонт електрообладнання</option>
+<option value="88">Роботи по заміні (встановленню) приладів обліку. </option>
+<option value="166">Транспортні послуги</option>
+</select>
+
+<p class="help-block help-block-error"></p>
+</div>            
+                
+<!--            -->
+            <div class="form-group field-inputdataform-work required">
+<label class="control-label" for="inputdataform-work">Найменування роботи (послуги):</label>
+<select id="inputdataform-work" class="form-control" name="InputDataForm[work]" onchange="hidepole_rabota($(&quot;#inputdataform-work :selected&quot;).text());" aria-required="true">
+<option value="151">Аналіз трансформаторного масла з визначенням вмісту вологи під час випробувань електрообладнання (1 проба)</option>
+<option value="82">Відключення (в тому числі повторне) електроустановки споживача з 1-фазним лічильником в точці обліку від внутрішньої електромережі споживача (в будинку або в квартирі) (1 споживач (електроустановка))</option>
+<option value="62">Відключення (в тому числі повторне) електроустановки споживача з 1-фазним лічильником від ізольованої електромережі на опорі ПЛ 0,4 кВ із зняттям проколюючих зажимів із застосуванням автовишки (1 споживач (електроустановка))</option>
+<option value="78">Відключення (в тому числі повторне) електроустановки споживача з 1-фазним лічильником від електромережі основного споживача (в поверховому розподільчому щиті) (1 споживач (електроустановка))</option>
+<option value="74">Відключення (в тому числі повторного) електроустановки споживача (з 1-фазним чи 3-фазним лічильником) від електромережі в центрах живлення (в приміщенні ТП) з застосуванням комутаційної апаратури (1 споживач (електроустановка))</option>
+<option value="70">Відключення (в тому числі повторное) електроустановки споживача (з 1-фазним чи 3-фазним лічильником) та ізольованим вводом від електромережі у виносній шафі обліку на фасаді будинку  (1 споживач (електроустановка))</option>
+<option value="66">Відключення (в тому числі повторное) електроустановки споживача з 3-фазним лічильником від ізольованої електромережі на опорі ПЛ 0,4 кВ із зняттям проколюючих зажимів із застосуванням автовишки (1 споживач (електроустановка))</option>
+<option value="60">Відключення електроустановки споживача від електричної мережі за допомогою комутаційної апаратури  (1 споживач (електроустановка))</option>
+<option value="13">Відключення електроустановки споживача від електричної мережі при однофазному вводі (відключення відгалужень від опори 0,4 кВ до ізоляторів та однофазних вводів в будівлю) із застосуванням автовишки (1 ввід)</option>
+<option value="15">Відключення електроустановки споживача від електричної мережі при однофазному вводі (відключення відгалужень від опори 0,4 кВ до ізоляторів та однофазних вводів в будівлю) із застосуванням лазів (1 ввід)</option>
+<option value="17">Відключення електроустановки споживача від електричної мережі при трифазному вводі із застосуванням автовишки (1 ввід)</option>
+<option value="19">Відключення електроустановки споживача від електричної мережі при трифазному вводі із застосуванням лазів (1 ввід)</option>
+<option value="24">Відключення однофазного електролічильника за нарядом (одно-, двоквартирні будинки, промисловість, комун.споживачі в центрі міста, при обслуговуванні яких не обов&#039;язкове застосування автотранспорта) (1 лічильник)</option>
+<option value="57">Відключення трифазного електролічильника за нарядом (одно-, двоквартирні будинки, промисловість, комун.споживачі в центрі міста, при обслуговуванні яких не обов&#039;язкове застосування автотранспорта) (1 лічильник)</option>
+<option value="42">Видача технічних умов приєднання електроустановки споживача до мереж ПрАТ ПЕЕМ ЦЕК
+від 16 до 50 кВт (включно)</option>
+<option value="44">Видача технічних умов приєднання електроустановки споживача до мереж ПрАТ ПЕЕМ ЦЕК
+від 160 до 250 кВт (включно)</option>
+<option value="45">Видача технічних умов приєднання електроустановки споживача до мереж ПрАТ ПЕЕМ ЦЕК
+від 250 до 500 кВт (включно)</option>
+<option value="43">Видача технічних умов приєднання електроустановки споживача до мереж ПрАТ ПЕЕМ ЦЕК
+від 50 до 160 кВт (включно)</option>
+<option value="41">Видача технічних умов приєднання електроустановки споживача до мереж ПрАТ ПЕЕМ ЦЕК
+до 16 кВт (включно)</option>
+<option value="46">Видача технічних умов приєднання електроустановки споживача до мереж ПрАТ ПЕЕМ ЦЕК 
+від 500 кВт і вище (включно)</option>
+<option value="86">Визов інспектора  (1 споживач)</option>
+<option value="138">Вимір напруги та навантаження електричної енергії (1 вимір)</option>
+<option value="101">Вимірювання втрат напруги у вторинних колах ТН. Вимірювання повної потужності і коефіцієнта потужності навантаження вторинних кіл ТН та ТС. (1 трансформатор)</option>
+<option value="135">Вимірювання опору ізоляції силових кабельних ліній на напругу 6-20 кВ та випробування кабельної лінії підвищеною випрямленою напругою (1 кабель)</option>
+<option value="97">Вимірювання опору ізоляції силових кабельних ліній на напругу до 1 кВ включно (1 кабель)</option>
+<option value="132">Вимірювання опору ізоляції силових кабельних ліній на напругу до 1 кВ включно та випробування кабельної лінії підвищеною випрямленою напругою (1 кабель)</option>
+<option value="90">Вимірювання опору ізоляції силових кабельних ліній на напругу до 1 кВ включно, вимірювання повного опору петлі фаза-нуль (до 1 кВ) та вимірювання опору заземлюючих пристроїв напругою до 1 кВ включно (1 кабель) </option>
+<option value="95">Вимірювання опору заземлюючих пристроїв напругою до 1 кВ включно  (1 вимірювання)</option>
+<option value="93">Вимірювання повного опору петлі фаза-нуль (до 1 кВ) (1 вимірювання) </option>
+<option value="153">Випробування ізолюючої штанги підвищеною напругою до 35 кВ включно (1 засіб захисту)</option>
+<option value="155">Випробування вказівника напруги підвищеною напругою від 6 до 110 кВ (1 засіб захисту)</option>
+<option value="154">Випробування вказівника напруги підвищеною напругою до 1000 В включно (1 засіб захисту)</option>
+<option value="157">Випробування діелектричних гумових рукавиць, ботів, калош підвищеною напругою (1 засіб захисту (1 пара))</option>
+<option value="156">Випробування електровимірювальних кліщів підвищеною напругою до 1000 В включно (1 засіб захисту)</option>
+<option value="126">Випробування збірних та з&#039;єднувальних шин напругою до 11 кВ (1 випробування)</option>
+<option value="129">Випробування збірних та з&#039;єднувальних шин напругою до 35 кВ (1 випробування)</option>
+<option value="122">Випробування силового трифазного двохобмоткового трансформатора напругою 3-20 кВ (1 трансформатор)</option>
+<option value="124">Випробування силового трифазного двохобмоткового трансформатора напругою 35 кВ (1 трансформатор)</option>
+<option value="141">Встановлення однофазного електролічильника згідно з поодиноким нарядом (1 лічильник)</option>
+<option value="158">Встановлення фасадної шафи обліку (напруга 220 В) (1 шафа обліку)</option>
+<option value="162">Встановлення фасадної шафи обліку (напруга 380 В) (1 шафа обліку)</option>
+<option value="173">ГАЗ 33021-212</option>
+<option value="175">ГАЗ 33023</option>
+<option value="178">ГАЗ 33023-212</option>
+<option value="179">ГАЗ 3307 автогідропідіймач АП-17</option>
+<option value="174">ГАЗ 3309 автогідропідіймач  АП-18</option>
+<option value="182">ГАЗ 5312 автогідропідіймач АП-17А</option>
+<option value="176">ГАЗ САЗ-3507</option>
+<option value="169">ГАЗ-3309 АР-18 автовишка, висота 18м</option>
+<option value="28">Демонтаж однофазного вводу від опори 0,4 кВ із застосуванням автовишки  (1 ввід)</option>
+<option value="29">Демонтажа трифазного вводу від опори 0,4 кВ із застосуванням автовишки  (1 ввід)</option>
+<option value="177">Екскаватор Борекс </option>
+<option value="190">Екскаватор ЭО-2102</option>
+<option value="171">Екскаватор ЮМЗ-6, ЕО-2101 Борекс</option>
+<option value="111">Заміна дооблікового автоматичного вимикача напругою 220 В (1 прилад обліку)</option>
+<option value="112">Заміна дооблікового автоматичного вимикача напругою 380 В (1 прилад обліку)</option>
+<option value="104">Заміна лічильника електроенергії прямого вмикання (1 лічильник)</option>
+<option value="105">Заміна лічильника електроенергії трансформаторного включення на стороні НН (ВН) (1 лічильник)</option>
+<option value="142">Заміна однофазного електролічильника за дефектами і згідно з поодиноким нарядом (1 лічильник)</option>
+<option value="143">Заміна однофазного електролічильника за дефектами і згідно з поодиноким нарядом (сільська місцевість) (1 лічильник)</option>
+<option value="144">Заміна та технічна перевірка однофазного електролічильника та дооблікових електричних мереж в індивідуальній забудові (лічильник у квартирі, будинку) (1 лічильник)</option>
+<option value="146">Заміна та технічна перевірка однофазного електролічильника та дооблікових електричних мереж в індивідуальній забудові при винесенні приладу обліку на фасад будинку в шафі двожильним СІП (1 лічильник)</option>
+<option value="107">Заміна трансформаторів струму в електроустановках напругою до 1000 В (1 трансформатор)</option>
+<option value="172">Зверніться до виробничого підрозділу або колцентру</option>
+<option value="140">Знімання однофазного електролічильника (1 лічильник)</option>
+<option value="168">МАЗ КС-45729 кран, 16 тон</option>
+<option value="167">МАЗ-543205, довгомір,кузов 13.5м, 20 тон</option>
+<option value="166">МАЗ-555102 самоскид,V=8куб,10 тон</option>
+<option value="30">Монтаж однофазного відгалуження двожильним СІП  (1 відгалуження)</option>
+<option value="32">Монтаж трифазного відгалуження з чотирма утримними ізольованими жилами або чотирижильним СІП з ізольованою утримною (нульовою) жилою (1 відгалуження)</option>
+<option value="100">Огляд обладнання споживача на предмет технічної готовності електромонтажних робіт (1 огляд)</option>
+<option value="2">Оформлення дозволу на виконання робіт в охоронній зоні електричних мереж (КЛ 0,4-10 кВ)  (1 дозвіл)</option>
+<option value="3">Оформлення дозволу на виконання робіт в охоронній зоні електричних мереж (КЛ 0,4-10 кВ) (1 дозвіл)</option>
+<option value="54">Оформлення дозволу на виконання робіт в охоронній зоні електричних мереж (ТП від 250 кВА до 1000 кВА) (1 дозвіл)</option>
+<option value="34">Підключення відгалужень від опори 0,4 кВ до ящика зовнішнього обліку електроенергії з установкою однофазного електролічильника  (1 ввід)</option>
+<option value="25">Підключення до електричної мережі електроустановок із сезонним характером робіт, які понад місяць були знеструмлені, в т.ч. первинне підключення юридичних споживачів (підключення відгалуженням) (1 установка)</option>
+<option value="58">Підключення електроустановки споживача до електричної мережі за допомогою комутаційної апаратури  (1 споживач (електроустановка))</option>
+<option value="23">Підключення однофазного електролічильника за нарядом (одно-, двоквартирні будинки, промисловість, комун.споживачі в центрі міста, при обслуговуванні яких не обов&#039;язкове застосування автотранспорта) (1 лічильник)</option>
+<option value="21">Підключення споживача (електроустановки) до електромережі ПЛ напругою 0,4 кВ (рубильником, автоматом) (1 споживач (електроустановка))</option>
+<option value="56">Підключення трифазного електролічильника за нарядом (одно-, двоквартирні будинки, промисловість, комун.споживачі в центрі міста, при обслуговуванні яких не обов&#039;язкове застосування автотранспорта) (1 лічильник)</option>
+<option value="9">Первиннqе або повторне підключення електроустановки споживача до електричної мережі при трифазному вводі із застосуванням автовишки (1 ввід)</option>
+<option value="5">Первинне або повторне підключення електроустановки споживача до електричної мережі при однофазному вводі (підключення відгалужень від опори 0,4 кВ до ізоляторів та однофазних вводів в будівлю) із застосуванням автовишки (1 ввід)</option>
+<option value="7">Первинне або повторне підключення електроустановки споживача до електричної мережі при однофазному вводі (підключення відгалужень від опори 0,4 кВ до ізоляторів та однофазних вводів в будівлю) із застосуванням лазів (1 ввід)</option>
+<option value="10">Первинне або повторне підключення електроустановки споживача до електричної мережі при трифазному вводі із застосуванням автовишки (1 ввід)</option>
+<option value="11">Первинне або повторне підключення електроустановки споживача до електричної мережі при трифазному вводі із застосуванням лазів (1 ввід)</option>
+<option value="149">Перевірка, пломбування і оформлення встановленого однофазного електролічильника в абонента в новому житловому будинку (1 лічильник)</option>
+<option value="150">Перевірка, пломбування і оформлення встановленого однофазного електролічильника в абонента в новому житловому будинку згідно з поодиноким нарядом (сільська місцевість) (1 лічильник)</option>
+<option value="72">Повторне підключення після відключення електроустановки споживача (з 1-фазним чи 3-фазним лічильником) до електромережі у виносній шафі обліку на фасаді будинку  (1 споживач (електроустановка))</option>
+<option value="84">Повторне підключення після відключення електроустановки споживача з 1-фазним лічильником в точці обліку до внутрішньобудинкової електромережі споживача (в будинку або в квартирі) (1 споживач (електроустановка))</option>
+<option value="80">Повторне підключення після відключення електроустановки споживача з 1-фазним лічильником до внутрішньобудинкової електромережі основного споживача (в поверховому розподільчому щиті) (1 споживач (електроустановка))</option>
+<option value="64">Повторне підключення після відключення електроустановки споживача з 1-фазним лічильником до електромережі з ізольованими проводами на опорі ПЛ 0,4 кВ проколюючими зажимами із застосуванням автовишки (1 споживач (електроустановка))</option>
+<option value="76">Повторное підключення після відключення електроустановки споживача (з 1-фазним чи 3-фазним лічильником) до електромережі в центрах живлення (в приміщенні ТП) з застосуванням комутаційної апаратури. (1 споживач (електроустановка))</option>
+<option value="68">Повторное підключення після відключення електроустановки споживача з 3-фазним лічильником до електромережі з ізольованими проводами на опорі ПЛ 0,4 кВ проколюючими зажимами із застосуванням автовишки (1 споживач (електроустановка))</option>
+<option value="52">Погодження проектної документації на відповідність виданим технічним умовам
+від 250 до 500 кВт (включно)</option>
+<option value="49">Погодження проектної документації на відповідність виданим технічним умовам 
+від 16 до 50 кВт (включно)</option>
+<option value="51">Погодження проектної документації на відповідність виданим технічним умовам 
+від 160 до 250 кВт (включно)</option>
+<option value="50">Погодження проектної документації на відповідність виданим технічним умовам 
+від 50 до 160 кВт (включно)</option>
+<option value="53">Погодження проектної документації на відповідність виданим технічним умовам 
+від 500 кВт і вище (включно)</option>
+<option value="48">Погодження проектної документації на відповідність виданим технічним умовам до 16 кВт (включно)</option>
+<option value="37">Позачергова технічна перевірка правильності роботи однофазних та трифазних приладів обліку електричної енергії (1 приєднання)</option>
+<option value="116">Пошук і визначення місця пошкодження силових кабельних ліній з пропалюванням, довжина кабеля до 1000 м (1 кабель)</option>
+<option value="113">Пошук і визначення місця пошкодження силових кабельних ліній з пропалюванням, довжина кабеля до 500 м (1 кабель)</option>
+<option value="119">Пошук і визначення місця пошкодження силових кабельних ліній з пропалюванням, за кожні наступні 500 м (1 кабель)</option>
+<option value="88">Програмування електронного лічильника електроенергії за допомогою переносного комп&#039;ютера (1 приєднання)</option>
+<option value="110">Розпломбування та опломбування приладу обліку (1 прилад обліку)</option>
+<option value="109">Технічний нагляд за виконанням робіт у межах охоронної зони електромереж (за одну годину роботи) (1 час роботи)</option>
+<option value="187">Трактор  ЮМЗ-6КЛ ЭО 2621</option>
+<option value="188">Трактор  ЮМЗ-6КМ</option>
+<option value="185">Трактор МТЗ-80 БМ-205</option>
+<option value="170">Трактор Т-150-БКУ(бурова кранова установка)</option>
+<option value="186">Трактор Т-40АМ</option>
+<option value="184">Трактор ЭО-2621 ЮМЗ-6АКЛ</option>
+<option value="183">УАЗ 3909 Фермер</option>
+</select>
+
+<p class="help-block help-block-error"></p>
+</div>            
+            <div class="form-group field-inputdataform-kol required">
+<label class="control-label" for="inputdataform-kol">Кількість калькуляційних одиниць:</label>
+<input type="text" id="inputdataform-kol" class="form-control" name="InputDataForm[kol]" value="1" aria-required="true">
+
+<p class="help-block help-block-error"></p>
+</div>            <div class="form-group field-inputdataform-time_work">
+<label class="control-label" for="inputdataform-time_work">Кількість годин роботи (тільки для транспортних послуг):</label>
+<input type="text" id="inputdataform-time_work" class="form-control" name="InputDataForm[time_work]" value="1">
+
+<p class="help-block help-block-error"></p>
+</div>            <div class="form-group field-inputdataform-time_prostoy">
+<label class="control-label" for="inputdataform-time_prostoy">Кількість годин простою (тільки для транспортних послуг):</label>
+<input type="text" id="inputdataform-time_prostoy" class="form-control" name="InputDataForm[time_prostoy]" value="1">
+
+<p class="help-block help-block-error"></p>
+</div>
+            <div class="form-group field-inputdataform-geo">
+<label class="control-label" for="inputdataform-geo">Geo</label>
+<input type="text" id="inputdataform-geo" class="form-control" name="InputDataForm[geo]" value="">
+
+<p class="help-block help-block-error"></p>
+</div><!--            -->
+            <p>Виберіть на карті місце виконання робіт (для обліку транспортних витрат):</p>
+            <div id="map_q"></div>
+
+            <div class="form-group field-inputdataform-distance required">
+<label class="control-label" for="inputdataform-distance">Відстань від бази до місця проведення робіт (в обидві сторони),км:</label>
+<input type="text" id="inputdataform-distance" class="dst" name="InputDataForm[distance]" value="0" maxlength="255" aria-required="true">
+
+<p class="help-block help-block-error"></p>
+</div>            <span class="primech"></span>
+            <span class="adr_potr"></span>
+
+            <div class="form-group field-inputdataform-adr_potr">
+
+<input type="hidden" id="inputdataform-adr_potr" class="form-control" name="InputDataForm[adr_potr]" value="">
+
+<p class="help-block help-block-error"></p>
+</div>
+            <div class="form-group field-inputdataform-koord">
+<label class="control-label" for="inputdataform-koord"></label>
+<input type="text" id="inputdataform-koord" class="distance" name="InputDataForm[koord]" value="" maxlength="255">
+
+<p class="help-block help-block-error"></p>
+</div>            
+            
+            <div style="color:#999;margin:1em 0">
+                <!-- If you forgot your password you can <a href="/CalcWork/web/request-password-reset">reset it</a>. -->
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">OK</button><!--                -->            </div>
+
+            </form>        </div>
+    </div>
+</div>
+
+ <script type="text/javascript">
+
+        // Определяем переменную map
+        var map;
+        var geo_marker = localStorage.getItem("geo_marker");
+        if(geo_marker=='') {
+            if (localStorage.getItem("geo_koord") == null) {
+                localStorage.setItem("geo_lat", 48.446203);
+                localStorage.setItem("geo_lng", 35.002512);
+            }
+        }
+        // Функция initMap которая отрисует карту на странице
+        function initMap() {
+            
+            
+            var geo_marker = localStorage.getItem("geo_marker");
+            if(geo_marker!='') {
+            var lat1 = +localStorage.getItem("geo_lat");
+            var lng1 = +localStorage.getItem("geo_lng");}
+            else{
+                var lat1 = +localStorage.getItem("geo_lat_res");
+                var lng1 = +localStorage.getItem("geo_lng_res");
+            }
+            var idr = localStorage.getItem("id_res");
+
+
+            
+                        
+            if(lat1==48.446203)
+            {    
+            // В переменной map создаем объект карты GoogleMaps и вешаем эту переменную на <div id="map"></div>
+            map = new google.maps.Map(document.getElementById('map_q'), {
+                // При создании объекта карты необходимо указать его свойства
+                // center - определяем точку на которой карта будет центрироваться
+                center: {lat: 48.446203, lng: 35.002512},
+               
+                // zoom - определяет масштаб. 0 - видно всю планету. 18 - видно дома и улицы города.
+                zoom: 17
+                
+            });
+            }
+            else
+            {    
+//                var addr_work = localStorage.getItem("addr_work");
+//
+//                if(typeof(addr_work)!='undefuned' && addr_work!=''){
+//                    addr_work = addr_work+'+Дніпропетровська+область';
+//                    var addr_request = 'https://maps.googleapis.com/maps/api/geocode/json?'+
+//                            'components=country:UA'+'&key='+'AIzaSyDSyQ_ATqeReytiFrTiqQAS9FyIIwuHQS4'+
+//                            '&address='+addr_work;
+//
+//
+//                    //alert(addr_request);
+//                    $.getJSON('/CalcWork/web/site/getloc?loc='+addr_request, function(data) {
+//
+//                        var lat1 = data.output.results[0].geometry.location.lat;
+//                        var lng1 = data.output.results[0].geometry.location.lng;
+//                        //localStorage.setItem("geo_marker","1");
+//                         //alert('pole='+lat1);
+//                        
+//                         //var location = {lat: alat, lng: alng};
+//
+//                    });
+//
+//                    //alert(location);
+//                }
+                
+                // alert(lng1);
+                map = new google.maps.Map(document.getElementById('map_q'), {
+                // При создании объекта карты необходимо указать его свойства
+                // center - определяем точку на которой карта будет центрироваться
+                //
+                
+                center: {lat: lat1, lng: lng1},
+               
+                // zoom - определяет масштаб. 0 - видно всю платнеу. 18 - видно дома и улицы города.
+                zoom: 15
+                
+            });
+            }
+          
+           
+        var marker;
+        $('.distance').val('');
+
+ //           alert(localStorage.getItem("geo_marker"));
+//            alert(localStorage.getItem("geo_k"));
+            var geo_k = localStorage.getItem("geo_k");
+            var geo_marker = localStorage.getItem("geo_marker");
+
+             
+        
+        
+        if(geo_marker!='') {
+            //alert(geo_k);
+//            var lat_save = localStorage.getItem("geo_lat_save");
+//            var lon_save = localStorage.getItem("geo_lng_save");
+
+
+            var myLatLng = {lat: lat1, lng: lng1};
+            marker = new google.maps.Marker({
+                position: myLatLng,
+                map: map,
+                //title: 'Hello World!'
+            });
+
+
+            lat1 = +localStorage.getItem("geo_lat_res");
+            lng1 = +localStorage.getItem("geo_lng_res");
+
+            //alert(localStorage.getItem("work"));
+//            alert(idr);
+
+            //            Уст. координат откуда будет ехать машина
+            if(localStorage.getItem("work")=='sd'
+                && ((idr==1) || (idr==2) || (idr==3) || (idr==7) || (idr==8) || (idr==11)))
+            {
+                //alert(1);
+                var lat1 = +localStorage.getItem("geo_lat_sd");
+                var lng1 = +localStorage.getItem("geo_lng_sd");
+//                alert(lat1);
+//                alert(lng1);
+                var town = localStorage.getItem("town_sd");
+                $('.primech').text('Увага! Машина їде з міста '+town+'.');
+//                localStorage.setItem("work", '');
+            }
+
+            if(localStorage.getItem("work")=='sz'
+                && ((idr==1) || (idr==2) || (idr==3) || (idr==6) || (idr==7) || (idr==11)))
+            {
+                //alert(2);
+                var lat1 = +localStorage.getItem("geo_lat_sz");
+                var lng1 = +localStorage.getItem("geo_lng_sz");
+
+                var town = localStorage.getItem("town_sz");
+                $('.primech').text('Увага! Машина їде з міста '+town+'.');
+//                localStorage.setItem("work", '');
+            }
+
+
+            var url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+lat1+','+lng1+'&destinations=';
+            url = url + geo_k;
+
+           // alert(url);
+
+            $.getJSON('/CalcWork/web/site/getdist?url='+url, function(data) {
+
+                a=data.output.rows[0].elements[0].distance.value;
+                a=Number(a)*2/1000;
+                a=a.toFixed(2);
+                $('.dst').val(a);
+                adr = 'Адреса виконання робіт: '+data.output.destination_addresses;
+                adr = adr.replace("Украина","Україна");
+                $('.adr_potr').text(adr);
+                $('#inputdataform-adr_potr').val(adr);
+                $('#inputdataform-geo').val(k);
+                //localStorage.setItem("geo_marker","1");
+
+            });
+
+        }
+
+         google.maps.event.addListener(map, 'click', function(e) {
+       
+         var location = e.latLng;
+         
+         //localStorage.setItem("geo_marker","");
+         $("#inputdataform-geo").val('1');
+         $('.distance').val(location);
+         
+       
+               
+        
+        
+        if(marker != undefined) marker.setMap(null);
+                         
+         marker = new google.maps.Marker({
+             position: location,
+             map: map
+           
+         });
+ 
+        var url,k;
+         var geo_marker = localStorage.getItem("geo_marker");
+
+         if(geo_marker=='') {
+             var lat1 = localStorage.getItem("geo_lat");
+             var lng1 = localStorage.getItem("geo_lng");
+         }
+             else {
+             var lat1 = localStorage.getItem("geo_lat_res");
+             var lng1 = localStorage.getItem("geo_lng_res");
+         }
+
+//             alert(lat1);
+//             alert(lng1);
+
+            $('.primech').text("");
+
+//            Уст. координат откуда будет ехать машина
+            if(localStorage.getItem("work")=='sd'
+                && ((idr==1) || (idr==2) || (idr==3) || (idr==7) || (idr==8) || (idr==11)))
+            {
+                var lat1 = +localStorage.getItem("geo_lat_sd");
+                var lng1 = +localStorage.getItem("geo_lng_sd");
+                var town = localStorage.getItem("town_sd");
+                $('.primech').text('Увага! Машина їде з міста '+town+'.');
+            }
+
+            if(localStorage.getItem("work")=='sz'
+                && ((idr==1) || (idr==2) || (idr==3) || (idr==6) || (idr==7) || (idr==11)))
+            {
+                var lat1 = +localStorage.getItem("geo_lat_sz");
+                var lng1 = +localStorage.getItem("geo_lng_sz");
+                var town = localStorage.getItem("town_sz");
+                $('.primech').text('Увага! Машина їде з міста '+town+'.');
+            }
+
+        if(lat1=="48.446203")
+        url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=48.446203,35.002512&destinations=";
+        else
+        {
+            url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+lat1+','+lng1+'&destinations=';
+        }    
+        k = location.toString();
+           
+        l = k.length;
+        k = k.substring(1,l-1);
+        url = url + k;
+
+//         alert(url);
+
+        $.getJSON('/CalcWork/web/site/getdist?url='+url, function(data) {
+                                               
+                a=data.output.rows[0].elements[0].distance.value;
+                a=Number(a)*2/1000;
+                a=a.toFixed(2);
+                $('.dst').val(a);
+                adr = 'Адреса виконання робіт: '+data.output.destination_addresses;
+                adr = adr.replace("Украина","Україна");
+                $('.adr_potr').text(adr);
+                $('#inputdataform-adr_potr').val(adr);
+                $('#inputdataform-geo').val(k);
+               
+         });
+         });
+      }
+
+      function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+
+      }
+
+   map.setMapDisplayLanguage(new Locale("ru"));
+   map.setMapSecondaryDisplayLanguage(new Locale("ru"));
+
+
+    </script>
+    
+    <script
+        window.onload=function(){
+        localStorage.setItem("geo_res", '');
+        localStorage.setItem("geo_lat", '');
+        localStorage.setItem("geo_lng", '');
+        localStorage.setItem("geo_lat_sd", '');
+        localStorage.setItem("geo_lng_sd", '');
+        localStorage.setItem("geo_lat_sz", '');
+        localStorage.setItem("geo_lng_sz", '');
+        localStorage.setItem("id_res", '');
+        localStorage.setItem("usluga", ' ');
+        }
+
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSyQ_ATqeReytiFrTiqQAS9FyIIwuHQS4&callback=initMap&language=ru&region=UA"
+        async defer>
+            
+    </script>
+    
+
+
+
+
+        </div>
+    </div>
+   
+
+    <footer class="footer">
+        <div class="container">
+            <p class="pull-left">&copy; ЦЕК 2017</p>
+            <p class="pull-right"></p>
+        </div>
+    </footer>
+
+<div id="yii-debug-toolbar" data-url="/CalcWork/web/debug/default/toolbar?tag=59c8f2137517b" style="display:none" class="yii-debug-toolbar-bottom"></div><style>
+#yii-debug-toolbar-logo {
+    position: fixed;
+    right: 31px;
+    bottom: 4px;
+}
+
+.yii-debug-toolbar {
+    font: 11px Verdana, Arial, sans-serif;
+    text-align: left;
+    width: 96px;
+    transition: width .3s ease;
+    z-index: 1000000;
+}
+
+.yii-debug-toolbar_active {
+    width: 100%;
+}
+
+.yii-debug-toolbar_position_top {
+    margin: 0 0 20px 0;
+    width: 100%;
+}
+
+.yii-debug-toolbar_position_bottom {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+}
+
+.yii-debug-toolbar__bar {
+    position: relative;
+    padding: 0;
+    font: 11px Verdana, Arial, sans-serif;
+    text-align: left;
+    overflow: hidden;
+    box-sizing: content-box;
+
+    background: rgb(255, 255, 255);
+    background: -moz-linear-gradient(top, rgb(255, 255, 255) 0%, rgb(247, 247, 247) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgb(255, 255, 255) 0%, rgb(247, 247, 247) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgb(255, 255, 255) 0%, rgb(247, 247, 247) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f7f7f7', GradientType=0); /* IE6-9 */
+
+    border: 1px solid rgba(0, 0, 0, 0.11);
+
+    /* ensure debug toolbar text is displayed ltr even on rtl pages */
+    direction: ltr;
+}
+
+.yii-debug-toolbar.yii-debug-toolbar_active:not(.yii-debug-toolbar_animating) .yii-debug-toolbar__bar {
+    overflow: visible;
+}
+.yii-debug-toolbar:not(.yii-debug-toolbar_active) .yii-debug-toolbar__bar {
+    height:40px;
+}
+
+.yii-debug-toolbar__bar:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.yii-debug-toolbar__view {
+    height: 0;
+    overflow: hidden;
+    background: white;
+}
+
+.yii-debug-toolbar__view iframe {
+    margin: 0;
+    padding: 0;
+    padding-top: 10px;
+    height: 100%;
+    width: 100%;
+    border: 0;
+}
+
+.yii-debug-toolbar_iframe_active .yii-debug-toolbar__view {
+    height: 100%;
+}
+
+.yii-debug-toolbar_iframe_animating .yii-debug-toolbar__view {
+    transition: height .3s ease;
+}
+
+.yii-debug-toolbar__block {
+    float: left;
+    margin: 0;
+    border-right: 1px solid rgba(0, 0, 0, 0.11);
+    padding: 4px 8px;
+    line-height: 32px;
+    white-space: nowrap;
+}
+
+.yii-debug-toolbar__block_active,
+.yii-debug-toolbar__ajax:hover {
+    background: rgb(247, 247, 247); /* Old browsers */
+    background: -moz-linear-gradient(top, rgb(247, 247, 247) 0%, rgb(224, 224, 224) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgb(247, 247, 247) 0%, rgb(224, 224, 224) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgb(247, 247, 247) 0%, rgb(224, 224, 224) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f7f7f7', endColorstr='#e0e0e0', GradientType=0); /* IE6-9 */
+}
+
+.yii-debug-toolbar__block a {
+    display: inline-block;
+    text-decoration: none;
+    color: black;
+}
+
+.yii-debug-toolbar__block img {
+    vertical-align: middle;
+}
+
+.yii-debug-toolbar__label {
+    display: inline-block;
+    padding: 2px 4px;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 14px;
+    white-space: nowrap;
+    vertical-align: baseline;
+    color: #ffffff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    background-color: #999999;
+    -webkit-border-radius: 3px;
+       -moz-border-radius: 3px;
+            border-radius: 3px;
+}
+
+.yii-debug-toolbar__label:empty {
+    display: none;
+}
+
+a.yii-debug-toolbar__label:hover,
+a.yii-debug-toolbar__label:focus {
+    color: #ffffff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.yii-debug-toolbar__label_important,
+.yii-debug-toolbar__label_error {
+    background-color: #b94a48;
+}
+
+.yii-debug-toolbar__label_important[href] {
+    background-color: #953b39;
+}
+
+.yii-debug-toolbar__label_warning,
+.yii-debug-toolbar__badge_warning {
+    background-color: #f89406;
+}
+
+.yii-debug-toolbar__label_warning[href] {
+    background-color: #c67605;
+}
+
+.yii-debug-toolbar__label_success {
+    background-color: #468847;
+}
+
+.yii-debug-toolbar__label_success[href] {
+    background-color: #356635;
+}
+
+.yii-debug-toolbar__label_info {
+    background-color: #3a87ad;
+}
+
+.yii-debug-toolbar__label_info[href] {
+    background-color: #2d6987;
+}
+
+.yii-debug-toolbar__label_inverse,
+.yii-debug-toolbar__badge_inverse {
+    background-color: #333333;
+}
+
+.yii-debug-toolbar__label_inverse[href],
+.yii-debug-toolbar__badge_inverse[href] {
+    background-color: #1a1a1a;
+}
+
+.yii-debug-toolbar__title {
+    background: rgb(247, 247, 247); /* Old browsers */
+    background: -moz-linear-gradient(top, rgb(247, 247, 247) 0%, rgb(224, 224, 224) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgb(247, 247, 247) 0%, rgb(224, 224, 224) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgb(247, 247, 247) 0%, rgb(224, 224, 224) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f7f7f7', endColorstr='#e0e0e0', GradientType=0); /* IE6-9 */
+}
+
+.yii-debug-toolbar__block_last{ /* creates space for .yii-debug-toolbar__toggle, .yii-debug-toolbar__external */
+    width: 80px;
+    height: 40px;
+    float: left;
+}
+
+.yii-debug-toolbar__toggle,
+.yii-debug-toolbar__external {
+    cursor: pointer;
+    position: absolute;
+
+    width: 30px;
+    height: 30px;
+    font-size: 25px;
+    font-weight: 100;
+    line-height: 28px;
+    color: #ffffff;
+    text-align: center;
+
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+
+    transition: opacity .3s ease;
+}
+
+.yii-debug-toolbar__toggle:hover,
+.yii-debug-toolbar__toggle:focus,
+.yii-debug-toolbar__external:hover,
+.yii-debug-toolbar__external:focus {
+    color: #ffffff;
+    text-decoration: none;
+    opacity: 0.9;
+    filter: alpha(opacity=90);
+}
+
+.yii-debug-toolbar__toggle-icon,
+.yii-debug-toolbar__external-icon {
+    display: inline-block;
+
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+}
+
+.yii-debug-toolbar__toggle {
+    right: 10px;
+    bottom: 4px;
+}
+
+.yii-debug-toolbar__toggle-icon {
+    padding: 7px 0;
+    width: 10px;
+    height: 16px;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNSIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDUwIDUwIj48cGF0aCBmaWxsPSIjNDQ0IiBkPSJNMTUuNTYzIDQwLjgzNmEuOTk3Ljk5NyAwIDAgMCAxLjQxNCAwbDE1LTE1YTEgMSAwIDAgMCAwLTEuNDE0bC0xNS0xNWExIDEgMCAwIDAtMS40MTQgMS40MTRMMjkuODU2IDI1LjEzIDE1LjU2MyAzOS40MmExIDEgMCAwIDAgMCAxLjQxNHoiLz48L3N2Zz4=');
+    transition: -webkit-transform .3s ease-out;
+    transition: transform .3s ease-out;
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+.yii-debug-toolbar_active .yii-debug-toolbar__toggle-icon {
+    -webkit-transform: rotate(0);
+    transform: rotate(0);
+}
+
+.yii-debug-toolbar_iframe_active .yii-debug-toolbar__toggle-icon {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+.yii-debug-toolbar__external {
+    display: none;
+    right: 50px;
+    bottom: 4px;
+}
+
+.yii-debug-toolbar_iframe_active .yii-debug-toolbar__external {
+    display: block;
+}
+
+.yii-debug-toolbar__external-icon {
+    padding: 8px 0;
+    width: 14px;
+    height: 14px;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNSIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDUwIDUwIj48cGF0aCBmaWxsPSIjNDQ0IiBkPSJNMzkuNjQyIDkuNzIyYTEuMDEgMS4wMSAwIDAgMC0uMzgyLS4wNzdIMjguMTAzYTEgMSAwIDAgMCAwIDJoOC43NDNMMjEuNyAyNi43OWExIDEgMCAwIDAgMS40MTQgMS40MTVMMzguMjYgMTMuMDZ2OC43NDNhMSAxIDAgMCAwIDIgMFYxMC42NDZhMS4wMDUgMS4wMDUgMCAwIDAtLjYxOC0uOTI0eiIvPjxwYXRoIGQ9Ik0zOS4yNiAyNy45ODVhMSAxIDAgMCAwLTEgMXYxMC42NmgtMjh2LTI4aDEwLjY4M2ExIDEgMCAwIDAgMC0ySDkuMjZhMSAxIDAgMCAwLTEgMXYzMGExIDEgMCAwIDAgMSAxaDMwYTEgMSAwIDAgMCAxLTF2LTExLjY2YTEgMSAwIDAgMC0xLTF6Ii8+PC9zdmc+');
+}
+
+.yii-debug-toolbar__ajax {
+    position: relative;
+}
+
+.yii-debug-toolbar__ajax:hover .yii-debug-toolbar__ajax_info,
+.yii-debug-toolbar__ajax:focus .yii-debug-toolbar__ajax_info {
+    visibility: visible;
+}
+.yii-debug-toolbar__ajax_info {
+    visibility: hidden;
+    transition: visibility .2s linear;
+    background-color: white;
+    box-shadow: inset 0 -10px 10px -10px #e1e1e1;
+    position: absolute;
+    bottom: 40px;
+    left: -1px;
+    padding: 10px;
+    max-width: 480px;
+    max-height: 480px;
+    word-wrap: break-word;
+    overflow: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.11);
+    z-index: 1000001;
+}
+.yii-debug-toolbar__ajax a {
+    color: #337ab7;
+}
+.yii-debug-toolbar__ajax table {
+    width: 100%;
+    table-layout: auto;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+.yii-debug-toolbar__ajax table td {
+    padding: 4px;
+    font-size: 12px;
+    line-height: normal;
+    vertical-align: top;
+    border-top: 1px solid #ddd;
+}
+.yii-debug-toolbar__ajax table th {
+    padding: 4px;
+    font-size: 11px;
+    line-height: normal;
+    vertical-align: bottom;
+    border-bottom: 2px solid #ddd;
+}
+.yii-debug-toolbar__ajax_request_status {
+    color: white;
+    padding: 2px 5px;
+}
+.yii-debug-toolbar__ajax_request_url {
+    max-width: 170px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}</style><script>(function () {
+    'use strict';
+
+    var findToolbar = function () {
+            return document.querySelector('#yii-debug-toolbar');
+        },
+        ajax = function (url, settings) {
+            var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+            settings = settings || {};
+            xhr.open(settings.method || 'GET', url, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.setRequestHeader('Accept', 'text/html');
+            xhr.onreadystatechange = function (state) {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200 && settings.success) {
+                        settings.success(xhr);
+                    } else if (xhr.status != 200 && settings.error) {
+                        settings.error(xhr);
+                    }
+                }
+            };
+            xhr.send(settings.data || '');
+        },
+        url,
+        div,
+        toolbarEl = findToolbar(),
+        toolbarAnimatingClass = 'yii-debug-toolbar_animating',
+        barSelector = '.yii-debug-toolbar__bar',
+        viewSelector = '.yii-debug-toolbar__view',
+        blockSelector = '.yii-debug-toolbar__block',
+        toggleSelector = '.yii-debug-toolbar__toggle',
+        externalSelector = '.yii-debug-toolbar__external',
+
+        CACHE_KEY = 'yii-debug-toolbar',
+        ACTIVE_STATE = 'active',
+
+        animationTime = 300,
+
+        activeClass = 'yii-debug-toolbar_active',
+        iframeActiveClass = 'yii-debug-toolbar_iframe_active',
+        iframeAnimatingClass = 'yii-debug-toolbar_iframe_animating',
+        titleClass = 'yii-debug-toolbar__title',
+        blockClass = 'yii-debug-toolbar__block',
+        blockActiveClass = 'yii-debug-toolbar__block_active',
+        requestStack = [];
+
+    if (toolbarEl) {
+        url = toolbarEl.getAttribute('data-url');
+
+        ajax(url, {
+            success: function (xhr) {
+                div = document.createElement('div');
+                div.innerHTML = xhr.responseText;
+
+                toolbarEl.parentNode && toolbarEl.parentNode.replaceChild(div, toolbarEl);
+
+                showToolbar(findToolbar());
+            },
+            error: function (xhr) {
+                toolbarEl.innerHTML = xhr.responseText;
+            }
+        });
+    }
+
+    function showToolbar(toolbarEl) {
+        var barEl = toolbarEl.querySelector(barSelector),
+            viewEl = toolbarEl.querySelector(viewSelector),
+            toggleEl = toolbarEl.querySelector(toggleSelector),
+            externalEl = toolbarEl.querySelector(externalSelector),
+            blockEls = barEl.querySelectorAll(blockSelector),
+            iframeEl = viewEl.querySelector('iframe'),
+            iframeHeight = function () {
+                return (window.innerHeight * 0.7) + 'px';
+            },
+            isIframeActive = function () {
+                return toolbarEl.classList.contains(iframeActiveClass);
+            },
+            showIframe = function (href) {
+                toolbarEl.classList.add(iframeAnimatingClass);
+                toolbarEl.classList.add(iframeActiveClass);
+
+                iframeEl.src = externalEl.href = href;
+                viewEl.style.height = iframeHeight();
+                setTimeout(function() {
+                    toolbarEl.classList.remove(iframeAnimatingClass);
+                }, animationTime);
+            },
+            hideIframe = function () {
+                toolbarEl.classList.add(iframeAnimatingClass);
+                toolbarEl.classList.remove(iframeActiveClass);
+                removeActiveBlocksCls();
+
+                externalEl.href = '#';
+                viewEl.style.height = '';
+                setTimeout(function() {
+                    toolbarEl.classList.remove(iframeAnimatingClass);
+                }, animationTime);
+            },
+            removeActiveBlocksCls = function () {
+                [].forEach.call(blockEls, function (el) {
+                    el.classList.remove(blockActiveClass);
+                });
+            },
+            toggleToolbarClass = function (className) {
+                toolbarEl.classList.add(toolbarAnimatingClass);
+                if (toolbarEl.classList.contains(className)) {
+                    toolbarEl.classList.remove(className);
+                } else {
+                    toolbarEl.classList.add(className);
+                }
+                setTimeout(function () {
+                    toolbarEl.classList.remove(toolbarAnimatingClass);
+                }, animationTime);
+            },
+            toggleStorageState = function (key, value) {
+                if (window.localStorage) {
+                    var item = localStorage.getItem(key);
+
+                    if (item) {
+                        localStorage.removeItem(key);
+                    } else {
+                        localStorage.setItem(key, value);
+                    }
+                }
+            },
+            restoreStorageState = function (key) {
+                if (window.localStorage) {
+                    return localStorage.getItem(key);
+                }
+            },
+            togglePosition = function () {
+                if (isIframeActive()) {
+                    hideIframe();
+                } else {
+                    toggleToolbarClass(activeClass);
+                    toggleStorageState(CACHE_KEY, ACTIVE_STATE);
+                }
+            };
+
+        toolbarEl.style.display = 'block';
+
+        if (restoreStorageState(CACHE_KEY) == ACTIVE_STATE) {
+            toolbarEl.classList.add(activeClass);
+        }
+
+        window.onresize = function () {
+            if (toolbarEl.classList.contains(iframeActiveClass)) {
+                viewEl.style.height = iframeHeight();
+            }
+        };
+
+        barEl.onclick = function (e) {
+            var target = e.target,
+                block = findAncestor(target, blockClass);
+
+            if (block && !block.classList.contains(titleClass)
+                && e.which !== 2 && !e.ctrlKey // not mouse wheel and not ctrl+click
+            ) {
+                while (target !== this) {
+                    if (target.href) {
+                        removeActiveBlocksCls();
+                        block.classList.add(blockActiveClass);
+                        showIframe(target.href);
+                    }
+                    target = target.parentNode;
+                }
+
+                e.preventDefault();
+            }
+        };
+
+        toggleEl.onclick = togglePosition;
+    }
+
+    function findAncestor(el, cls) {
+        while ((el = el.parentElement) && !el.classList.contains(cls));
+        return el;
+    }
+
+    function renderAjaxRequests() {
+        var requestCounter = document.getElementsByClassName('yii-debug-toolbar__ajax_counter');
+        if (!requestCounter.length) {
+            return;
+        }
+        var ajaxToolbarPanel = document.querySelector('.yii-debug-toolbar__ajax');
+        var tbodies = document.getElementsByClassName('yii-debug-toolbar__ajax_requests');
+        var state = 'ok';
+        if (tbodies.length) {
+            var tbody = tbodies[0];
+            var rows = document.createDocumentFragment();
+            if (requestStack.length) {
+                var firstItem = requestStack.length > 20 ? requestStack.length - 20 : 0;
+                for (var i = firstItem; i < requestStack.length; i++) {
+                    var request = requestStack[i];
+                    var row = document.createElement('tr');
+                    rows.appendChild(row);
+
+                    var methodCell = document.createElement('td');
+                    methodCell.innerHTML = request.method;
+                    row.appendChild(methodCell);
+
+                    var statusCodeCell = document.createElement('td');
+                    var statusCode = document.createElement('span');
+                    if (request.statusCode < 300) {
+                        statusCode.setAttribute('class', 'yii-debug-toolbar__ajax_request_status yii-debug-toolbar__label_success');
+                    } else if (request.statusCode < 400) {
+                        statusCode.setAttribute('class', 'yii-debug-toolbar__ajax_request_status yii-debug-toolbar__label_warning');
+                    } else {
+                        statusCode.setAttribute('class', 'yii-debug-toolbar__ajax_request_status yii-debug-toolbar__label_error');
+                    }
+                    statusCode.textContent = request.statusCode || '-';
+                    statusCodeCell.appendChild(statusCode);
+                    row.appendChild(statusCodeCell);
+
+                    var pathCell = document.createElement('td');
+                    pathCell.className = 'yii-debug-toolbar__ajax_request_url';
+                    pathCell.innerHTML = request.url;
+                    pathCell.setAttribute('title', request.url);
+                    row.appendChild(pathCell);
+
+                    var durationCell = document.createElement('td');
+                    durationCell.className = 'yii-debug-toolbar__ajax_request_duration';
+                    if (request.duration) {
+                        durationCell.innerText = request.duration + " ms";
+                    } else {
+                        durationCell.innerText = '-';
+                    }
+                    row.appendChild(durationCell);
+                    row.appendChild(document.createTextNode(' '));
+
+                    var profilerCell = document.createElement('td');
+                    if (request.profilerUrl) {
+                        var profilerLink = document.createElement('a');
+                        profilerLink.setAttribute('href', request.profilerUrl);
+                        profilerLink.innerText = request.profile;
+                        profilerCell.appendChild(profilerLink);
+                    } else {
+                        profilerCell.innerText = 'n/a';
+                    }
+                    row.appendChild(profilerCell);
+
+                    if (request.error) {
+                        if (state !== "loading" && i > requestStack.length - 4) {
+                            state = 'error';
+                        }
+                    } else if (request.loading) {
+                        state = 'loading'
+                    }
+                    row.className = 'yii-debug-toolbar__ajax_request';
+                }
+                while (tbody.firstChild) {
+                    tbody.removeChild(tbody.firstChild);
+                }
+                tbody.appendChild(rows);
+            }
+            ajaxToolbarPanel.style.display = 'block';
+        }
+        requestCounter[0].innerText = requestStack.length;
+        var className = 'yii-debug-toolbar__label yii-debug-toolbar__ajax_counter';
+        if (state == 'ok') {
+            className += ' yii-debug-toolbar__label_success';
+        } else if (state == 'error') {
+            className += ' yii-debug-toolbar__label_error';
+        }
+        requestCounter[0].className = className;
+    };
+
+    var proxied = XMLHttpRequest.prototype.open;
+
+    XMLHttpRequest.prototype.open = function (method, url, async, user, pass) {
+        var self = this;
+        /* prevent logging AJAX calls to static and inline files, like templates */
+        if (url.substr(0, 1) === '/' && !url.match(new RegExp("{{ excluded_ajax_paths }}"))) {
+            var stackElement = {
+                loading: true,
+                error: false,
+                url: url,
+                method: method,
+                start: new Date()
+            };
+            requestStack.push(stackElement);
+            this.addEventListener("readystatechange", function () {
+                if (self.readyState == 4) {
+                    stackElement.duration = self.getResponseHeader("X-Debug-Duration") || new Date() - stackElement.start;
+                    stackElement.loading = false;
+                    stackElement.statusCode = self.status;
+                    stackElement.error = self.status < 200 || self.status >= 400;
+                    stackElement.profile = self.getResponseHeader("X-Debug-Tag");
+                    stackElement.profilerUrl = self.getResponseHeader("X-Debug-Link");
+                    renderAjaxRequests();
+                }
+            }, false);
+            renderAjaxRequests();
+        }
+        proxied.apply(this, Array.prototype.slice.call(arguments));
+    };
+
+})();</script><script src="assets/9ad251c1/jquery.js"></script>
+<script src="assets/eeccf27c/yii.js"></script>
+<script src="assets/eeccf27c/yii.validation.js"></script>
+<script src="assets/eeccf27c/yii.activeForm.js"></script>
+<script src="assets/31c9acc1/js/bootstrap.js"></script>
+<script type="text/javascript">jQuery(document).ready(function () {
+jQuery('#inputdata').yiiActiveForm([{"id":"inputdataform-res","name":"res","container":".field-inputdataform-res","input":"#inputdataform-res","error":".help-block.help-block-error","validate":function (attribute, value, messages, deferred, $form) {yii.validation.required(value, messages, {"message":"Введіть РЕМ"});}},{"id":"inputdataform-potrebitel","name":"potrebitel","container":".field-inputdataform-potrebitel","input":"#inputdataform-potrebitel","error":".help-block.help-block-error","validate":function (attribute, value, messages, deferred, $form) {yii.validation.string(value, messages, {"message":"Значение «Споживач ІНН:» должно быть строкой.","min":10,"tooShort":"ІНН повинно бути 10 значним","max":10,"tooLong":"ІНН повинно бути 10 значним","skipOnEmpty":1});}},{"id":"inputdataform-work","name":"work","container":".field-inputdataform-work","input":"#inputdataform-work","error":".help-block.help-block-error","validate":function (attribute, value, messages, deferred, $form) {yii.validation.required(value, messages, {"message":"Необходимо заполнить «Найменування роботи (послуги):»."});}},{"id":"inputdataform-kol","name":"kol","container":".field-inputdataform-kol","input":"#inputdataform-kol","error":".help-block.help-block-error","validate":function (attribute, value, messages, deferred, $form) {yii.validation.required(value, messages, {"message":"Необходимо заполнить «Кількість калькуляційних одиниць:»."});}},{"id":"inputdataform-distance","name":"distance","container":".field-inputdataform-distance","input":"#inputdataform-distance","error":".help-block.help-block-error","validate":function (attribute, value, messages, deferred, $form) {yii.validation.required(value, messages, {"message":"Необходимо заполнить «Відстань від бази до місця проведення робіт (в обидві сторони),км:»."});}}], []);
+});</script></body>
+</html>

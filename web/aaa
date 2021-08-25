@@ -1,0 +1,1 @@
+select *,rate_person(post) as sort1,rate_group(unit_2) as sort2 from vw_phone  order by sort1,sort2,fio

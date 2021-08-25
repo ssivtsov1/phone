@@ -1,0 +1,44 @@
+create view vw_phone as
+select a.*,IF(isnull(i.tab_nom),b.tel,concat(b.tel,', ',i.tel)) as tel_mob,b.rate,b.type_tel,
+c.tel,c.tel_town,c.phone_type,c.line,c.nazv,
+d.username as email,e.username as email_group
+from 1c a
+left join kyivstar b on a.tab_nom = b.tab_nom
+left join hipatch c on a.tab_nom = c.tab_nom
+left join mailbox d on a.tab_nom = d.tab_nom and d.tab_nom<>0
+left join mailbox e on a.id_podr = e.name and e.tab_nom=0
+left join mts i on a.tab_nom = i.tab_nom
+
+
+create view vw_phone as
+select distinct a.*,IF(isnull(i.tab_nom),b.tel,concat(b.tel,', ',i.tel)) as tel_mob,b.rate,b.type_tel, if(isnull(c.tel) or trim(c.tel)="",ss.tel,c.tel) as tel,c.tel_town,c.phone_type,c.line,c.nazv, d.username as email,e.username as email_group 
+from `1c` a 
+left join kyivstar b on a.tab_nom = b.tab_nom or trim(a.fio)=trim(b.fio)
+left join hipatch c on a.tab_nom = c.tab_nom or trim(a.fio)=trim(c.fio)
+left join (select min(q.tab_nom) as tab_nom,w.post,w.unit_1,min(q.tel) as tel from hipatch q 
+inner join (select tab_nom, post,unit_1 from 1c) w on q.tab_nom=w.tab_nom where q.tel is not null and trim(q.tel)<>""
+group by w.post,w.unit_1) ss on a.post = ss.post and a.unit_1 = ss.unit_1 and a.unit_2<>'Управління справами'
+left join mailbox d on a.tab_nom = d.tab_nom and d.tab_nom<>0 
+left join mailbox e on a.id_podr = e.name and e.tab_nom=0 
+left join mts i on a.tab_nom = i.tab_nom 
+
+
+// Новый последний
+select distinct a.*,IF(isnull(i.tab_nom),b.tel,concat(b.tel,', ',i.tel)) as tel_mob,b.rate,b.type_tel, if(isnull(c.tel) or trim(c.tel)="",ss.tel,c.tel) as tel,c.tel_town,c.phone_type,c.line,c.nazv, d.username as email,e.username as email_group,p.gpost 
+from `1c` a 
+left join (select max(tab_nom) as tab_nom,max(tel) as tel,fio,max(rate) as rate,max(type_tel) as type_tel from kyivstar group by fio) b on a.tab_nom = b.tab_nom or trim(a.fio)=trim(b.fio)
+left join (select max(tab_nom) as tab_nom,max(tel) as tel,fio,max(tel_town) as tel_town,max(phone_type) as phone_type,max(line) as line,max(nazv) as nazv  from hipatch group by fio) c on a.tab_nom = c.tab_nom or trim(a.fio)=trim(c.fio)
+left join (select min(q.tab_nom) as tab_nom,w.post,w.unit_1,min(q.tel) as tel from hipatch q 
+inner join (select tab_nom, post,unit_1 from 1c) w on q.tab_nom=w.tab_nom where q.tel is not null and trim(q.tel)<>""
+group by w.post,w.unit_1) ss on a.post = ss.post and a.unit_1 = ss.unit_1 and a.unit_2<>'Управління справами'
+left join mailbox d on a.tab_nom = d.tab_nom and d.tab_nom<>0 
+left join mailbox e on a.id_podr = e.name and e.tab_nom=0 
+left join mts i on a.tab_nom = i.tab_nom
+left join group_post p on trim(a.post) = trim(p.post) 
+
+
+// Старый
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`ssivtcov`@`localhost` SQL SECURITY DEFINER VIEW `vw_phone` AS select distinct `a`.`id` AS `id`,`a`.`tab_nom` AS `tab_nom`,`a`.`unit_1` AS `unit_1`,`a`.`id_podr` AS `id_podr`,`a`.`unit_2` AS `unit_2`,`a`.`post` AS `post`,`a`.`fio` AS `fio`,`a`.`fio_ru` AS `fio_ru`,`a`.`fio_sound` AS `fio_sound`,`a`.`remark` AS `remark`,`a`.`id_name` AS `id_name`,`a`.`main_unit` AS `main_unit`,`a`.`chf` AS `chf`,`a`.`photo` AS `photo`,`a`.`post_ru` AS `post_ru`,if(isnull(`i`.`tab_nom`),`b`.`tel`,concat(`b`.`tel`,', ',`i`.`tel`)) AS `tel_mob`,`b`.`rate` AS `rate`,`b`.`type_tel` AS `type_tel`,if((isnull(`c`.`tel`) or (trim(`c`.`tel`) = '')),`ss`.`tel`,`c`.`tel`) AS `tel`,`c`.`tel_town` AS `tel_town`,`c`.`phone_type` AS `phone_type`,`c`.`line` AS `line`,`c`.`nazv` AS `nazv`,`d`.`username` AS `email`,`e`.`username` AS `email_group` from ((((((`phone_new`.`1c` `a` left join (select max(`phone_new`.`kyivstar`.`tab_nom`) AS `tab_nom`,max(`phone_new`.`kyivstar`.`tel`) AS `tel`,`phone_new`.`kyivstar`.`fio` AS `fio`,max(`phone_new`.`kyivstar`.`rate`) AS `rate`,max(`phone_new`.`kyivstar`.`type_tel`) AS `type_tel` from `phone_new`.`kyivstar` group by `phone_new`.`kyivstar`.`fio`) `b` on(((`a`.`tab_nom` = `b`.`tab_nom`) or (trim(`a`.`fio`) = trim(`b`.`fio`))))) left join (select max(`phone_new`.`hipatch`.`tab_nom`) AS `tab_nom`,max(`phone_new`.`hipatch`.`tel`) AS `tel`,`phone_new`.`hipatch`.`fio` AS `fio`,max(`phone_new`.`hipatch`.`tel_town`) AS `tel_town`,max(`phone_new`.`hipatch`.`phone_type`) AS `phone_type`,max(`phone_new`.`hipatch`.`line`) AS `line`,max(`phone_new`.`hipatch`.`nazv`) AS `nazv` from `phone_new`.`hipatch` group by `phone_new`.`hipatch`.`fio`) `c` on(((`a`.`tab_nom` = `c`.`tab_nom`) or (trim(`a`.`fio`) = trim(`c`.`fio`))))) left join (select min(`q`.`tab_nom`) AS `tab_nom`,`w`.`post` AS `post`,`w`.`unit_1` AS `unit_1`,min(`q`.`tel`) AS `tel` from (`phone_new`.`hipatch` `q` join (select `phone_new`.`1c`.`tab_nom` AS `tab_nom`,`phone_new`.`1c`.`post` AS `post`,`phone_new`.`1c`.`unit_1` AS `unit_1` from `phone_new`.`1c`) `w` on((`q`.`tab_nom` = `w`.`tab_nom`))) where ((`q`.`tel` is not null) and (trim(`q`.`tel`) <> '')) group by `w`.`post`,`w`.`unit_1`) `ss` on(((`a`.`post` = `ss`.`post`) and (`a`.`unit_1` = `ss`.`unit_1`) and (`a`.`unit_2` <> 'Управління справами')))) left join `phone_new`.`mailbox` `d` on(((`a`.`tab_nom` = `d`.`tab_nom`) and (`d`.`tab_nom` <> 0)))) left join `phone_new`.`mailbox` `e` on(((`a`.`id_podr` = `e`.`name`) and (`e`.`tab_nom` = 0)))) left join `phone_new`.`mts` `i` on((`a`.`tab_nom` = `i`.`tab_nom`))) 	utf8mb4 	utf8mb4_unicode_ci
+
+

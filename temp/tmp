@@ -1,0 +1,7 @@
+[
+                'header' => 'Плат.ПДВ',
+                
+                'class' => 'yii\grid\CheckboxColumn', 'checkboxOptions' => function($model, $key, $index, $column) {
+                return ['key' => $model->id,'value' => $model->priz_nds];
+            },
+            ],
