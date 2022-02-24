@@ -11,6 +11,7 @@ $this->title = 'Телефонний довідник (ЦЄК)';
 <script>
      window.addEventListener('load', function(){
 
+
          var vip = localStorage.getItem('vip');
          $('#inputdata-vip').val(vip);
          if(vip==1) {
@@ -37,7 +38,15 @@ $this->title = 'Телефонний довідник (ЦЄК)';
          })
     });
 
-    
+     // $('#MeteoInformerWrap').removeClass('constructor__metlink');
+
+     // window.onload=function(){
+     //     var element = document.getElementById("MeteoInformerWrap").classList;
+     //     // alert(element);
+     //     element.remove('constructor__metlink');
+     //
+     // };
+
 </script>
 
 
@@ -64,7 +73,7 @@ $this->title = 'Телефонний довідник (ЦЄК)';
                                 select min(a.id_name) as id_name,b.id,b.nazv,a.main_unit,
                                 case when b.id is null and LOCATE('РЕМ', a.main_unit)=0 then 0
                                 when LOCATE('РЕМ', a.main_unit)>0 then 1 end as ssort 
-                                from vw_phone a 
+                                from 1c a 
                                 left join spr_res b on a.main_unit = b.nazv
                                 where  id_name is not null 
                                 group by b.id,b.nazv,a.main_unit
@@ -98,7 +107,7 @@ $this->title = 'Телефонний довідник (ЦЄК)';
                 select 1630 as id," Всі підрозділи" as unit_1
                 union
                 Select min(id) as id,unit_1 
-                from vw_phone 
+                from 1c 
                 where LENGTH(ltrim(rtrim(unit_1)))<>0
                  group by unit_1 
                  order by unit_1')
@@ -126,7 +135,7 @@ $this->title = 'Телефонний довідник (ЦЄК)';
                 select 1630 as id," Всі підрозділи" as unit_2
                 union
                 Select min(id) as id,unit_2 
-                from vw_phone 
+                from 1c 
                 where LENGTH(ltrim(rtrim(unit_2)))<>0
                  group by unit_2
                   order by unit_2')
@@ -313,7 +322,7 @@ $this->title = 'Телефонний довідник (ЦЄК)';
                  </div>
             <?php endif; ?>
             <!--            <br>-->
-            <p class="tel_news_r">1. З <span> 09.07.2021 </span> довідник обновився актуальними записами з новими посадами.</p>
+            <p class="tel_news_r">1. З <span> 21.09.2021 </span> довідник обновився актуальними записами з новими посадами.</p>
             <p class="tel_news_r">2. Увага! З'явились нові фото співробітників.</p>
             <p class="tel_news_sr">3. З'явився пошук по групі посад.</p>
 <!--            <p class="tel_news_r">2. Увага! З'явилась нова послуга <a href="http://192.168.55.1/proffer">«Книга скарг та пропозицій»</a></p>-->
@@ -332,12 +341,156 @@ $this->title = 'Телефонний довідник (ЦЄК)';
                 <img src="https://w.bookcdn.com/weather/picture/2_33401_1_20_137AE9_160_ffffff_333333_08488D_1_ffffff_333333_0_6.png?scode=124&domid=604&anc_id=26065"  alt="booked.net"/>
             </a> weather widget end -->
             
-           <div id="MeteoInformerWrap">
-            <script type="text/javascript" src="http://meteo.ua/var/informers.js"></script>
-            <script type="text/javascript">
-            makeMeteoInformer("http://meteo.ua/informer/get.php?cities=164&w=280&lang=ua&rnd=1&or=vert&clr=4&dt=today&style=classic",276,525);
-            </script>
-            </div>
+<!--           <div id="MeteoInformerWrap">-->
+<!--            <script type="text/javascript" src="http://meteo.ua/var/informers.js"></script>-->
+<!--            <script type="text/javascript">-->
+<!--            makeMeteoInformer("http://meteo.ua/informer/get.php?cities=164&w=280&lang=ua&rnd=1&or=vert&clr=4&dt=today&style=classic",276,525);-->
+<!--            </script>-->
+<!--            </div>-->
+
+            <?php
+//            $apiKey = "feb5088590e2d51f105fddf4c1b9435d";
+//            $cityId = "709930";
+//            $apiUrl = "http://api.openweathermap.org/data/2.5/weather?id=" . $cityId . "&lang=ru&units=metric&APPID=" . $apiKey;
+//
+//            $crequest = curl_init();
+//
+//            curl_setopt($crequest, CURLOPT_HEADER, 0);
+//            curl_setopt($crequest, CURLOPT_RETURNTRANSFER, 1);
+//            curl_setopt($crequest, CURLOPT_URL, $apiUrl);
+//            curl_setopt($crequest, CURLOPT_FOLLOWLOCATION, 1);
+//            curl_setopt($crequest, CURLOPT_VERBOSE, 0);
+//            curl_setopt($crequest, CURLOPT_SSL_VERIFYPEER, false);
+//            $response = curl_exec($crequest);
+//
+//            curl_close($crequest);
+//            $data = json_decode($response);
+//            $currentTime = time();
+//
+//            $feels_like=round($data->main->feels_like,0);
+//            $clouds = $data->clouds->all;
+//            debug($feels_like);
+//            debug($clouds);
+//            debug($data);
+            ?>
+
+<!--          <div id="MeteoInformerWrap">-->
+<!--            <link type="text/css" rel="stylesheet" href="https://www.meteoprog.ua/css/winformer.min.css?id=100">-->
+<!---->
+<!--            <div class="meteoprog-informer" style="width: 260px" data-params='{"city_ids":"2392","domain":"https://www.meteoprog.ua/ua","id":"61497bf22bac9279538b46f0","lang":"ua"}'>-->
+<!---->
+<!--                <a title="Погода в місті Дніпро (Дніпропетровськ)" target="_blank" href="https://www.meteoprog.ua/ua/weather/Dnipropetrovsk">-->
+<!--                    <img style="margin: 0 auto; display: block" src="https://www.meteoprog.ua/images/preloader.gif" alt="Loading...">-->
+<!--                </a>-->
+<!--                <a target="_blank" class="constructor__met2wlink" href="https://www.meteoprog.ua/ua/review/Dnipropetrovsk/">Погода на 2 тижні</a>-->
+<!---->
+<!--                <a class="constructor__metlink" target="_blank" href="https://www.meteoprog.ua/ua">-->
+<!--                    <img  style="display: block; margin: 0 auto;" alt="" src="https://www.meteoprog.ua/images/meteoprog-inf.png">-->
+<!--                </a>-->
+<!--            </div>-->
+<!--                 <script type="text/javascript" src="https://www.meteoprog.ua/js/winformer.min.js?id=100"></script>-->
+<!--                <script>-->
+<!--                 // Баннер погоды-->
+<!--                !function()-->
+<!--                {var DomReady=window.DomReady={},userAgent=navigator.userAgent.toLowerCase(),-->
+<!--                    browser_safari=(userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/),/webkit/.test(userAgent)),-->
+<!--                    browser_opera=/opera/.test(userAgent),browser_msie=/msie/.test(userAgent)&&!/opera/.test(userAgent),-->
+<!--                    readyBound=(/mozilla/.test(userAgent)&&/(compatible|webkit)/.test(userAgent),!1),isReady=!1,readyList=[];-->
+<!--                    function domReady(){if(!isReady&&(isReady=!0,readyList))-->
+<!--                    {for(var fn=0;fn<readyList.length;fn++)readyList[fn].call(window,[]);readyList=[]}}-->
+<!--                     function bindReady() {var numStyles,func,oldonload;readyBound||(readyBound=!0,-->
+<!--                     document.addEventListener&&!browser_opera&&document.addEventListener("DOMContentLoaded",domReady,!1),-->
+<!--                     browser_msie&&window==top&&function(){if(!isReady){-->
+<!--                         try{document.documentElement.doScroll("left")}catch(error){return setTimeout(arguments.callee,0)}-->
+<!--                         domReady()}}(),browser_opera&&document.addEventListener("DOMContentLoaded",function()-->
+<!--                            {if(!isReady){for(var i=0;i<document.styleSheets.length;i++)-->
+<!--                                if(document.styleSheets[i].disabled)return void setTimeout(arguments.callee,0);-->
+<!--                                domReady()}},!1),-->
+<!--                                browser_safari&&function(){if(!isReady)-->
+<!--                                    if("loaded"===document.readyState||"complete"===document.readyState){-->
+<!--                                        if(void 0===numStyles){-->
+<!--                                            for(var links=document.getElementsByTagName("link"),i=0;i<links.length;i++)"stylesheet"===links[i].getAttribute("rel")&&numStyles++;-->
+<!--                                            var styles=document.getElementsByTagName("style");numStyles+=styles.length}-->
+<!--                                            document.styleSheets.length==numStyles?domReady():setTimeout(arguments.callee,0)}-->
+<!--                                            else setTimeout(arguments.callee,0)}(),func=domReady,-->
+<!--                                             oldonload=window.onload,-->
+<!--                                            "function"!=typeof window.onload?window.onload=func:window.onload=function()-->
+<!--                                            {oldonload&&oldonload(),func()})}DomReady.ready=function(fn,args)-->
+<!--                                            {bindReady(),isReady?fn.call(window,[]):readyList.push(function()-->
+<!--                                            {return fn.call(window,[])})},bindReady()}(),-->
+<!--                                            function(){var our_informers;function getDomainFromUrl(url)-->
+<!--                                            {var url_element=document.createElement("a");return url_element.href=url,-->
+<!--                                            "https://"+url_element.hostname}function initInformers(i)-->
+<!--                                            {var params,onReady,http,obj_params,url,dataParams=our_informers[i].getAttribute("data-params"),-->
+<!--                                                jsonDataParams=JSON.parse(dataParams),-->
+<!---->
+<!--                                                citiesCount=jsonDataParams.city_ids.split(",").length;our_informers[i].querySelectorAll('a[href*="meteoprog."]').length>=2*citiesCount?(params=dataParams,-->
+<!--                                                onReady=function(data) {var outerElem=document.createElement("div",{class:"outerelem"});-->
+<!---->
+<!--                                                // Взлом-->
+<!--                                                // Добавляем Температура відчувається и Хмарність с другого сайта-->
+<!--                                                    var pos = data.indexOf('constructor__city-wrp');-->
+<!--                                                    var data1 =   data.substring(0, pos+22) ;-->
+<!--                                                    var data2 =   data.substring(pos+23) ;-->
+<!--                                                    data = data1 + '<div class="constructor__custom1"> Температура відчувається на ' +-->
+<!--                                                        --><?php //echo $feels_like; ?><!--//  + '&deg;</div>';-->
+<!--//                                                    data = data + '<div class="constructor__custom2"> Хмарність ' +-->
+<!--//                                                        --><?php ////echo $clouds; ?><!--// +  '% </div>' + data2 ;-->
+<!--//                                                // Убираем ссылку внизу-->
+<!--//                                                // alert(data);-->
+<!--//                                                var pos = data.indexOf('constructor__metlink');-->
+<!--//                                                data =   data.substring(0, pos-10) ;-->
+<!--//                                                // Убираем ссылку с температуры-->
+<!--//                                                data =   data.replace('href="https://meteoprog.ua/weather/Dnipropetrovsk"','');-->
+<!--//                                                //-->
+<!--//-->
+<!--//                                                outerElem.innerHTML=data;-->
+<!--//                                                for(var links=outerElem.querySelectorAll("link"),-->
+<!--//                                                                                 // links.length-->
+<!--//                                                 curr_domain=(outerElem.querySelectorAll("img"),getDomainFromUrl(jsonDataParams.domain)),j=0;j<links.length;j++)-->
+<!--//                                                    links[j].getAttribute("href").startsWith("http://")||links[j].getAttribute("href").startsWith("https://")||(links[j].href=curr_domain+links[j].getAttribute("href"));-->
+<!--//                                                document.querySelectorAll(".meteoprog-informer")[i].innerHTML=outerElem.innerHTML,++i<our_informers.length&&initInformers(i)},-->
+<!--//                                                http=new XMLHttpRequest,obj_params=JSON.parse(params),-->
+<!--//                                                url=getDomainFromUrl(obj_params.domain)+"/widget_v2/show/json/"+obj_params.id+"/?nocache=1",-->
+<!--//                                                http.open("POST",url,!0),http.setRequestHeader("Content-type","application/x-www-form-urlencoded"),-->
+<!--//                                                http.onreadystatechange=function(){4===http.readyState&&200===http.status&&onReady(JSON.parse(http.responseText).data)},-->
+<!--//                                                http.send("params="+params)):++i<our_informers.length&&initInformers(i)}DomReady.ready(function(){-->
+<!--//                                                our_informers=document.querySelectorAll(".meteoprog-informer"),initInformers(0)-->
+<!--//-->
+<!--//                                                })-->
+<!--//-->
+<!--//                                                var element = document.getElementById("MeteoInformerWrap").classList;-->
+<!--//                                                // alert(element);-->
+<!--//                                                element.remove('constructor__metlink');-->
+<!--//-->
+<!--//                }();-->
+<!--//-->
+<!--//-->
+<!--//                </script>-->
+
+
+<!--            </div>-->
+
+
+
+<!--            <div class="weather">-->
+<!--                <h2 class="weather__title">Погода в городе --><?php //echo $data->name; ?><!--</h2>-->
+<!--                <div class="weather__time">-->
+<!--                    <p class="weather__time">--><?php //echo date("l g:i a", $currentTime); ?><!--</p>-->
+<!--                    <p class="weather__date">--><?php //echo date("jS F, Y",$currentTime); ?><!--</p>-->
+<!--                    <p class="weather__status">--><?php //echo ucwords($data->weather[0]->description); ?><!--</p>-->
+<!--                </div>-->
+<!--                <div class="weather__forecast">-->
+<!--                    <span class="weather__min">--><?php //echo $data->main->temp_min; ?><!--°C</span>-->
+<!--                    <span class="weather__max">--><?php //echo $data->main->temp_max; ?><!--°C</span>-->
+<!--                </div>-->
+<!--                <p class="weather__humidity">Влажность: --><?php //echo $data->main->humidity; ?><!-- %</p>-->
+<!--                <p class="weather__wind">Ветер: --><?php //echo $data->wind->speed; ?><!-- км/ч</p>-->
+<!--            </div>-->
+
+
+
+
         <?php endif; ?>  
     </div>
 </div>
@@ -522,6 +675,8 @@ function stringFill(x, n) {
 
 
     //window.onload=function(){
+
+
    
 </script>
 

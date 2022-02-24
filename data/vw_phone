@@ -23,7 +23,7 @@ left join mailbox e on a.id_podr = e.name and e.tab_nom=0
 left join mts i on a.tab_nom = i.tab_nom 
 
 
-// Новый последний
+// Новый предпоследний
 select distinct a.*,IF(isnull(i.tab_nom),b.tel,concat(b.tel,', ',i.tel)) as tel_mob,b.rate,b.type_tel, if(isnull(c.tel) or trim(c.tel)="",ss.tel,c.tel) as tel,c.tel_town,c.phone_type,c.line,c.nazv, d.username as email,e.username as email_group,p.gpost 
 from `1c` a 
 left join (select max(tab_nom) as tab_nom,max(tel) as tel,fio,max(rate) as rate,max(type_tel) as type_tel from kyivstar group by fio) b on a.tab_nom = b.tab_nom or trim(a.fio)=trim(b.fio)
@@ -35,6 +35,22 @@ left join mailbox d on a.tab_nom = d.tab_nom and d.tab_nom<>0
 left join mailbox e on a.id_podr = e.name and e.tab_nom=0 
 left join mts i on a.tab_nom = i.tab_nom
 left join group_post p on trim(a.post) = trim(p.post) 
+
+
+// Новый последний
+select distinct a.*,IF(isnull(i.tab_nom),b.tel,concat(b.tel,', ',i.tel)) as tel_mob,b.rate,b.type_tel, if(isnull(c.tel) or trim(c.tel)="",ss.tel,c.tel) as tel,c.tel_town,c.phone_type,c.line,c.nazv,
+ d.username as email,e.username as email_group,p.gpost,j.tel as tel_private 
+from `1c` a 
+left join (select max(tab_nom) as tab_nom,max(tel) as tel,fio,max(rate) as rate,max(type_tel) as type_tel from kyivstar group by fio) b on a.fio=b.fio
+left join (select max(tab_nom) as tab_nom,max(tel) as tel,fio,max(tel_town) as tel_town,max(phone_type) as phone_type,max(line) as line,max(nazv) as nazv from hipatch group by fio) c on a.fio=c.fio
+left join (select min(q.tab_nom) as tab_nom,w.post,w.unit_1,min(q.tel) as tel from hipatch q 
+inner join (select tab_nom, post,unit_1 from 1c) w on q.tab_nom=w.tab_nom where q.tel is not null and trim(q.tel)<>""
+group by w.post,w.unit_1) ss on a.post = ss.post and a.unit_1 = ss.unit_1 and a.unit_2<>'Управління справами'
+left join mailbox d on a.tab_nom = d.tab_nom and d.tab_nom<>0 
+left join mailbox e on a.id_podr = e.name and e.tab_nom=0 
+left join mts i on a.tab_nom = i.tab_nom
+left join group_post p on trim(a.post) = trim(p.post)
+left join tel_head j on a.tab_nom = j.tab_nom 
 
 
 // Старый

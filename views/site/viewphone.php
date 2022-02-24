@@ -70,6 +70,7 @@ use yii\grid\CheckboxColumn;
 use yii\grid\SerialColumn;
 
 $this->title = 'Телефонний довідник';
+
 //debug($vip);
 $flag_like = 0;
 if($kol==0){
@@ -95,6 +96,14 @@ else
 ?>
 <?//= Html::a('Добавити', ['createtransp'], ['class' => 'btn btn-success']) ?>
 <div class="site-spr">
+    <?php echo Html::a('Пошук', ['more'], ['class' => 'btn btn-success']); ?>
+    <?
+    echo Html::a('Експорт в Excel', ['more?'.
+        'item=Excel'],
+        ['class' => 'btn btn-info excel_btn'
+        ]);
+    ?>
+    <br>
     <?php if($flag_like==0): ?>
         <h5><?= Html::encode($zag) ?></h5>
     <?php endif; ?>    

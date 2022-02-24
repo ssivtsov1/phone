@@ -94,8 +94,9 @@ class SiteController extends Controller
     }
 
     //  Происходит после ввода пароля
-    public function actionMore($sql='0')
+    public function actionMore($sql='0',$item='')
     {
+
         $this->curpage=1;
         if($sql=='0') {
 
@@ -110,6 +111,35 @@ class SiteController extends Controller
 
             $date=date('Y-m-d');
             if($date>=$date_b && $date<=$date_e) $gendir=$cdata[0]['gendir'];
+
+            if (Yii::$app->request->get('item') == 'Excel' )
+            {
+//                $dataProvider = employees::find();
+//                $newQuery = clone $dataProvider->query;
+//                $models = $newQuery->all();
+
+                $models = employees::find()->orderby(['fio' => SORT_ASC])->all();
+                $kind=1;
+                $k1 = 'Телефонний довідник';
+
+//             Сброс в Excel
+                if($kind==1){
+                    \moonland\phpexcel\Excel::widget([
+                        'models' => $models,
+
+                        'mode' => 'export', //default value as 'export'
+                        'format' => 'Excel2007',
+                        'hap' => $k1,    //cтрока шапки таблицы
+                        'data_model' => 1,
+                        'columns' => ['fio','post','tel_mob','tel','tel_town','main_unit','unit_1',
+                            'unit_2','email','email_group'],
+                        'headers' => ['fio' => 'П.І.Б','post' => 'Посада','tel_mob' => 'Моб.тел.','tel'=> 'Внутр. тел.','tel_town' => 'Міський тел.',
+                            'main_unit' => 'Гол. підрозділ','unit_1' => 'Підпор. підрозділ', 'unit_2' => 'Група','email' => 'Особова пошта',
+                            'email_group' => 'Пошта відділу'
+                        ],
+                    ]);}
+                return;
+            }
 
             if ($model->load(Yii::$app->request->post())) {
                 $vip = $model->vip;
@@ -203,16 +233,18 @@ class SiteController extends Controller
                 else
                     $where = ' where ' . substr($where, 4);
 
-
                 $sql = "select *,rate_person(post) as sort1,rate_group(unit_2) as sort2 from vw_phone " . $where . ' order by sort1,sort2,fio';
 
+//            debug('Обновление тел. справочника. Временно не работает.');
 //            debug($sql);
-//            return;
 
                 $f=fopen('aaa','w+');
                 fputs($f,$sql);
 
                 $data = viewphone::findBySql($sql)->all();
+
+//                debug($data);
+
 //            $dataProvider = new ActiveDataProvider([
 //                'query' => viewphone::findBySql($sql),
 //               // 'sort' => ['defaultOrder'=> ['sort'=>SORT_ASC,'unit_2'=>SORT_ASC]]
@@ -273,6 +305,8 @@ class SiteController extends Controller
                 $session->set('view', 1);
                 //'data' => $data
 
+
+
                 return $this->render('viewphone', [
                     'dataProvider' => $dataProvider,
                     'searchModel' => $searchModel, 'kol' => $kol,
@@ -297,6 +331,7 @@ class SiteController extends Controller
             $session = Yii::$app->session;
             $session->open();
             $session->set('view', 1);
+
 
             return $this->render('viewphone', ['data' => $data,
                 'dataProvider' => $dataProvider, 'searchModel' => $searchModel, 'kol' => $kol, 'sql' => $sql]);
